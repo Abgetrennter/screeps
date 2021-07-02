@@ -8,7 +8,7 @@ module.exports = {
       }
     }
 
-    if (Game.spawns['Spawn1'].Spawning != null ) {
+    if (Game.spawns['Spawn1'].Spawning != null) {
       // console.log('can\'t')
       return; //检测创造screep是否可行
     }
