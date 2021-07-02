@@ -8,7 +8,9 @@ module.exports = {
       }
     }
 
-    if (Game.spawns['Spawn1'].Spawning != null) {
+    if (Game.spawns['Spawn1'].Spawning != null ||
+        Game.spawns['Spawn1'].spawnCreep([ WORK, CARRY, MOVE ], 'harvester',
+                                         {dryRun : true}) != 0) {
       // console.log('can\'t')
       return; //检测创造screep是否可行
     }
@@ -21,7 +23,7 @@ module.exports = {
     //优先满足采集
     var worker1 =
         _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
-    if (worker1.length < roles['harvester']) {
+    if (worker1.length < roles['harvester'][0]) {
       var newName = 'harvester' + Game.time % 100;
       Game.spawns['Spawn1'].spawnCreep(roles['harvester'][1], newName,
                                        {memory : {role : 'harvester'}});
@@ -30,7 +32,7 @@ module.exports = {
 
     var worker2 =
         _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
-    if (worker2.length < roles['builder']) {
+    if (worker2.length < roles['builder'][0]) {
       var newName = 'builder' + Game.time % 100;
       Game.spawns['Spawn1'].spawnCreep(roles['builder'][1], newName,
                                        {memory : {role : 'builder'}});
@@ -39,7 +41,7 @@ module.exports = {
 
     var worker3 =
         _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
-    if (worker3.length < roles['upgrader']) {
+    if (worker3.length < roles['upgrader'][0]) {
       var newName = 'upgrader' + Game.time % 100;
       Game.spawns['Spawn1'].spawnCreep(roles['upgrader'][1], newName,
                                        {memory : {role : 'upgrader'}});
