@@ -12,7 +12,7 @@ var roleHarvester = {
         filter : (structure) => {
           return (structure.structureType == STRUCTURE_EXTENSION ||
                   structure.structureType == STRUCTURE_SPAWN ||
-                  structure.structureType == STRUCTURE_TOWER) &&
+                  structure.structureType == STRUCTURE_CONTAINER) &&
                  structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
         }
       });
@@ -24,5 +24,4 @@ var roleHarvester = {
     }
   }
 };
-
 module.exports = roleHarvester;
