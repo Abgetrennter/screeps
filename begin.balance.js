@@ -15,9 +15,9 @@ module.exports = {
       return; //检测创造screep是否可行
     }
     var roles = {
-      'harvester' : [ 3, [ WORK, CARRY, MOVE ] ],
-      'upgrader' : [ 1, [ WORK, CARRY, MOVE ] ],
-      'builder' : [ 2, [ WORK, CARRY, MOVE ] ]
+      'harvester' : [ 2, [ WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE ] ],
+      'upgrader' : [ 3, [ WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE ] ],
+      'builder' : [ 3, [ WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE ] ]
     }; //配置文件
 
     //优先满足采集
