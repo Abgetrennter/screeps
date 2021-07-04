@@ -13,10 +13,12 @@ module.exports = {
       return; //检测创造screep是否可行
     }
     var roles = {
-      'harvester' : [ 2, [ WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE ] ],
+      'harvester' :
+          [ 3, [ WORK, WORK, WORK, CARRY, CARRY, MOVE, CARRY, MOVE ] ],
       'upgrader' : [ 3, [ WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE ] ],
-      'builder' : [ 3, [ WORK, WORK, CARRY, CARRY, MOVE, MOVE ] ],
-      'repairer' : [ 2, [ WORK, WORK, CARRY, MOVE, MOVE, MOVE ] ]
+      'builder' : [ 2, [ WORK, WORK, CARRY, CARRY, MOVE, MOVE ] ],
+      'repairer' : [ 2, [ WORK, WORK, CARRY, MOVE, MOVE, MOVE ] ],
+      'carrier' : [ 2, [ WORK, CARRY, MOVE, CARRY, MOVE, MOVE ] ]
     }; //配置文件
 
     //优先满足采集
@@ -51,8 +53,18 @@ module.exports = {
         _.filter(Game.creeps, (creep) => creep.memory.role == 'repairer');
     if (worker4.length < roles['repairer'][0]) {
       var newName = 'repairer' + Game.time % 100;
-      Game.spawns['Spawn1'].spawnCreep(roles['repairer'][1], newName,
-                                       {memory : {role : 'repairer'}});
+      Game.spawns['Spawn1'].spawnCreep(
+          roles['repairer'][1], newName,
+          {memory : {role : 'repairer', repairing : false}});
+      return;
+    }
+
+    var worker5 =
+        _.filter(Game.creeps, (creep) => creep.memory.role == 'carrier');
+    if (worker4.length < roles['carrier'][0]) {
+      var newName = 'carrier' + Game.time % 100;
+      Game.spawns['Spawn1'].spawnCreep(roles['carrier'][1], newName,
+                                       {memory : {role : 'carrier'}});
       return;
     }
   }
