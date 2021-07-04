@@ -1,5 +1,5 @@
 
-var roleBuilder = {
+let roleBuilder = {
 
   /** @param {Creep} creep **/
   run : function(creep) {
@@ -11,14 +11,14 @@ var roleBuilder = {
     }
 
     if (creep.memory.building) {
-      var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
+      let targets = creep.room.find(FIND_CONSTRUCTION_SITES);
       if (targets.length) {
         if (creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
           creep.moveTo(targets[0], {visualizePathStyle : {stroke : '#ffffff'}});
         }
       }
     } else {
-      var sources = creep.room.find(FIND_STRUCTURES, {
+      let sources = creep.room.find(FIND_STRUCTURES, {
         filter : (structure) => {
           return (structure.structureType == STRUCTURE_CONTAINER &&
                   structure.store[RESOURCE_ENERGY] > 0);

@@ -9,7 +9,7 @@ module.exports = {
     }
 
     if (creep.memory.repairing) {
-      var targets = creep.room.find(
+      let targets = creep.room.find(
           FIND_STRUCTURES, {filter : object => object.hits < object.hitsMax})
       // targets.sort((a, b) => a.hits - b.hits);
       if (targets.length) {
@@ -18,7 +18,7 @@ module.exports = {
         }
       }
     } else {
-      var sources = creep.room.find(FIND_STRUCTURES, {
+      let sources = creep.room.find(FIND_STRUCTURES, {
         filter : (structure) => {
           return (structure.structureType == STRUCTURE_CONTAINER ||
                   structure.structureType == STRUCTURE_STORAGE) &&

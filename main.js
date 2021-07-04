@@ -1,20 +1,20 @@
-var roleHarvester = require('role.harvester')
-var roleUpgrader = require('role.upgrader')
-var roleBuilder = require('role.builder')
-var roleRepairer = require('role.repairer')
-var beginBalance = require('begin.balance')
-var roleCarrier = require('role.carrier')
+let roleHarvester = require('role.harvester')
+let roleUpgrader = require('role.upgrader')
+let roleBuilder = require('role.builder')
+let roleRepairer = require('role.repairer')
+let beginBalance = require('begin.balance')
+let roleCarrier = require('role.carrier')
 function tower() {
-  var tower = Game.getObjectById('TOWER_ID')
+  let tower = Game.getObjectById('TOWER_ID')
   if (tower) {
-    var closestDamagedStructure = tower.pos.findClosestByRange(
+    let closestDamagedStructure = tower.pos.findClosestByRange(
         FIND_STRUCTURES,
         {filter : (structure) => structure.hits < structure.hitsMax})
     if (closestDamagedStructure) {
       tower.repair(closestDamagedStructure)
     }
 
-    var closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
+    let closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
     if (closestHostile) {
       tower.attack(closestHostile)
     }
@@ -24,8 +24,8 @@ function tower() {
 module.exports.loop = function() {
   beginBalance.run()
 
-  for (var name in Game.creeps) {
-    var creep = Game.creeps[name];
+  for (let name in Game.creeps) {
+    let creep = Game.creeps[name];
     if (creep.memory.role == 'harvester') {
       roleHarvester.run(creep);
     }

@@ -1,4 +1,4 @@
-var roleUpgrader = {
+let roleUpgrader = {
 
   /** @param {Creep} creep **/
   run : function(creep) {
@@ -15,7 +15,7 @@ var roleUpgrader = {
                      {visualizePathStyle : {stroke : '#ffffff'}});
       }
     } else {
-      var sources = creep.room.find(FIND_STRUCTURES, {
+      let sources = creep.room.find(FIND_STRUCTURES, {
         filter : (structure) => {
           return (structure.structureType == STRUCTURE_CONTAINER &&
                   structure.store[RESOURCE_ENERGY] > 0);
