@@ -22,11 +22,14 @@ function tower() {
 }
 
 function get_source() {
-  let targets = Game.spawns['Spawn1'].room.find(FIND_SOURCES);
-  Memory.source = {};
-  // console.log(Memory.source)
-  for (let i in targets) {
-    Memory.source[targets[i].id] = 0;
+  for (let name in Game.creeps) {
+    if (Game.creeps[name].memory.role == 'harvester') {
+      if (Game.creeps[name].memory.source in Memory.source) {
+        Memory.source[Game.creeps[name].memory.source] += 1;
+      } else {
+        Memory.source[Game.creeps[name].memory.source] = 1;
+      }
+    }
   }
 }
 
