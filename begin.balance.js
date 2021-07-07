@@ -1,24 +1,26 @@
 module.exports = {
   run : function() {
     //回收内存
-    for (let name in Memory.creeps) {
-      if (!Game.creeps[name]) {
-        delete Memory.creeps[name];
-        console.log('Clearing non-existing creep memory:', name);
+
+    {
+      let targets = Game.spawns['Spawn1'].room.find(FIND_TOMBSTONES);
+      // console.log(targets)
+      for (let i in targets) {
+        let creep = targets[i].creep
+        if (creep.role == 'harvester') {
+          Memory.source[creep.memory.source] -= 1;
+        }
+        // console.log(targets[i].creep.name);
+        delete Memory.creeps[targets[i].creep.name];
       }
     }
 
-    if (Game.spawns['Spawn1'].Spawning != null) {
-      // console.log('can\'t')
-      return; //检测创造screep是否可行
-    }
     let roles = {
-      'harvester' :
-          [ 3, [ WORK, WORK, WORK, CARRY, CARRY, MOVE, CARRY, MOVE ] ],
-      'upgrader' : [ 3, [ WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE ] ],
-      'builder' : [ 2, [ WORK, WORK, CARRY, CARRY, MOVE, MOVE ] ],
-      'repairer' : [ 2, [ WORK, WORK, CARRY, MOVE, MOVE, MOVE ] ],
-      'carrier' : [ 2, [ WORK, CARRY, MOVE, CARRY, MOVE, MOVE ] ]
+      'harvester' : [ 3, [ WORK, CARRY, MOVE ] ],
+      'upgrader' : [ 2, [ WORK, CARRY, MOVE ] ],
+      'builder' : [ 2, [ WORK, CARRY, MOVE ] ],
+      'repairer' : [ 1, [ WORK, CARRY, MOVE, MOVE ] ],
+      'carrier' : [ 1, [ WORK, CARRY, MOVE ] ]
     }; //配置文件
 
     //优先满足采集
@@ -27,8 +29,32 @@ module.exports = {
           _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
       if (worker.length < roles['harvester'][0]) {
         let newName = 'harvester' + Game.time % 100;
-        Game.spawns['Spawn1'].spawnCreep(roles['harvester'][1], newName,
-                                         {memory : {role : 'harvester'}});
+        let target;
+        for (let i in Memory.source) {
+          if (Memory.source[i] < 2) {
+            target = i;
+            break;
+          }
+        }
+
+        flag = Game.spawns['Spawn1'].spawnCreep(
+            roles['harvester'][1], newName,
+            {memory : {role : 'harvester', source : target}});
+        if (flag == OK) {
+          Memory.source[target] += 1;
+        }
+
+        return;
+      }
+    }
+
+    {
+      let worker =
+          _.filter(Game.creeps, (creep) => creep.memory.role == 'carrier');
+      if (worker.length < roles['carrier'][0]) {
+        let newName = 'carrier' + Game.time % 100;
+        Game.spawns['Spawn1'].spawnCreep(roles['carrier'][1], newName,
+                                         {memory : {role : 'carrier'}});
         return;
       }
     }
@@ -63,17 +89,6 @@ module.exports = {
         Game.spawns['Spawn1'].spawnCreep(
             roles['repairer'][1], newName,
             {memory : {role : 'repairer', repairing : false}});
-        return;
-      }
-    }
-
-    {
-      let worker5 =
-          _.filter(Game.creeps, (creep) => creep.memory.role == 'carrier');
-      if (worker4.length < roles['carrier'][0]) {
-        let newName = 'carrier' + Game.time % 100;
-        Game.spawns['Spawn1'].spawnCreep(roles['carrier'][1], newName,
-                                         {memory : {role : 'carrier'}});
         return;
       }
     }
