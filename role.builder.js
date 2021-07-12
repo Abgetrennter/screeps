@@ -1,4 +1,4 @@
-
+let roleUpgrader = require("role.upgrader");
 let roleBuilder = {
 
   /** @param {Creep} creep **/
@@ -17,6 +17,8 @@ let roleBuilder = {
         if (creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
           creep.moveTo(targets[0], {visualizePathStyle : {stroke : '#ffffff'}});
         }
+      } else {
+        roleUpgrader.run(creep);
       }
     } else {
       let sources = creep.room.find(FIND_STRUCTURES, {

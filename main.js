@@ -22,6 +22,8 @@ function tower() {
 }
 
 function get_source() {
+  Memory.source = {};
+
   for (let name in Game.creeps) {
     if (Game.creeps[name].memory.role == 'harvester') {
       if (Game.creeps[name].memory.source in Memory.source) {
@@ -34,17 +36,25 @@ function get_source() {
 }
 
 function count_screeps() {
-  Memory.c_screeps =
-      {'harvester' : 0, 'upgrader' : 0, 'builder' = 0, 'carrier' = 0};
+  Memory.c_screeps = {};
+  let temp = [ 'harvester', 'repairer', 'builder', 'carrier', 'upgrader' ];
+  for (let i in temp) {
+    Memory.c_screeps[temp[i]] = 0;
+  }
   for (let name in Game.creeps) {
-    let role = Game.creeps[name].memory.role;
-    Memory.c_screeps[role] += 1;
+    if (Game.creeps[name].memory.role in Memory.c_screeps) {
+      Memory.c_screeps[Game.creeps[name].memory.role] += 1;
+    } else {
+      Memory.c_screeps[Game.creeps[name].memory.role] = 1;
+    }
   }
 }
 
 module.exports.loop = function() {
+  // count_screeps();
   beginBalance.run()
   // get_source()
+
   for (let name in Game.creeps) {
     let creep = Game.creeps[name];
     if (creep.memory.role == 'harvester') {
