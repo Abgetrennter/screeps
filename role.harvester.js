@@ -7,6 +7,11 @@ let roleHarvester = {
   */
   run : function(creep) {
     if (creep.store.getFreeCapacity() > 0) {
+      let sources = creep.room.find(FIND_SOURCES);
+      // console.log(sources[0].pos.x)
+      sources.sort((a, b) => -b.pos.x + a.pos.x);
+      //
+      // let i = cr;
       // console.log(sources[1] == Game.getObjectById(creep.memory.source));
       if (creep.harvest(Game.getObjectById(creep.memory.source)) ==
           ERR_NOT_IN_RANGE) {
