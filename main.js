@@ -30,6 +30,15 @@ function get_source() {
   }
 }
 
+function count_screeps() {
+  Memory.c_screeps =
+      {'harvester' : 0, 'upgrader' : 0, 'builder' = 0, 'carrier' = 0};
+  for (let name in Game.creeps) {
+    let role = Game.creeps[name].memory.role;
+    Memory.c_screeps[role] += 1;
+  }
+}
+
 module.exports.loop = function() {
   beginBalance.run()
   // get_source()

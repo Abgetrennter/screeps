@@ -10,6 +10,8 @@ module.exports = {
         }
       });
       if (targets.length > 0) {
+        targets.sort((a, b) =>
+                         (b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]));
         let flag = creep.withdraw(targets[0], RESOURCE_ENERGY);
         // console.log(flag);
         if (flag == ERR_NOT_IN_RANGE) {
