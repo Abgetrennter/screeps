@@ -1,9 +1,10 @@
-let roleHarvester = require('role.harvester')
-let roleUpgrader = require('role.upgrader')
-let roleBuilder = require('role.builder')
-let roleRepairer = require('role.repairer')
-let beginBalance = require('begin.balance')
-let roleCarrier = require('role.carrier')
+let roleHarvester = require('role.harvester');
+let roleUpgrader = require('role.upgrader');
+let roleBuilder = require('role.builder');
+let roleRepairer = require('role.repairer');
+let beginBalance = require('begin.balance');
+let roleCarrier = require('role.carrier');
+let ini = require('init.js');
 function tower() {
   let tower = Game.getObjectById('TOWER_ID')
   if (tower) {
@@ -33,7 +34,7 @@ function count_screeps() {
 */
 module.exports.loop = function() {
   beginBalance.run();
-  get_structure(STRUCTURE_CONTAINER);
+  // get_structure(STRUCTURE_CONTAINER);
   // get_source()
   for (let name in Game.creeps) {
     let creep = Game.creeps[name];
