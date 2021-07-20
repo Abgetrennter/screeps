@@ -8,20 +8,28 @@ function get_structure(structure_name) {
   for (let i in targets) {
     Memory[structure_name][targets[i].id] = 0;
   }
+  return _.size(targets);
 }
 
-function get_container() {
-  get_structure(STRUCTURE_CONTAINER);
+function new_container() {
+  let count = get_structure(STRUCTURE_CONTAINER);
+  if (count == 0) {
+    return false;
+  }
   let workers =
       _.filter(Game.creeps, (creep) => creep.memory.role == 'carrier');
   for (let i in workers) {
-    let creep = Game.creeps[i];
-    Memory[STRUCTURE_CONTAINER][creep.memory.source] += 1;
+    let creep = workers[i];
+    console.log(creep);
+    if (!creep.memory.container) {
+      continue;
+    }
+    Memory[STRUCTURE_CONTAINER][creep.memory.container] += 1;
   }
-  return;
+  return true;
 }
 
-function get_source() {
+function new_source() {
   let targets = Game.spawns['Spawn1'].room.find(FIND_SOURCES);
   Memory.source = {};
   // console.log(Memory.source)
@@ -32,8 +40,16 @@ function get_source() {
   let workers =
       _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
   for (let i in workers) {
-    let creep = Game.creeps[i];
+    let creep = workers[i];
+    if (!creep.memory.source) {
+      continue;
+    }
     Memory.source[creep.memory.source] += 1;
   }
   return;
 }
+
+module.exports = {
+  source : new_source,
+  container : new_container,
+};

@@ -2,8 +2,8 @@ const roles = {
   'harvester' : [ 3, [ WORK, CARRY, MOVE ] ],
   'upgrader' : [ 2, [ WORK, CARRY, MOVE ] ],
   'builder' : [ 2, [ WORK, CARRY, MOVE ] ],
-  'repairer' : [ 1, [ WORK, CARRY, MOVE, MOVE ] ],
-  'carrier' : [ 1, [ WORK, CARRY, MOVE ] ]
+  'repairer' : [ 0, [ WORK, CARRY, MOVE, MOVE ] ],
+  'carrier' : [ 0, [ WORK, CARRY, MOVE ] ]
 }; //配置文件
 
 module.exports = {
@@ -58,6 +58,7 @@ module.exports = {
 
     {
       // carrier 在运送的时候也应该绑定相关的CONTAINER
+      // 但是初始的时候是没有container的所以也不需要carrier
       let worker =
           _.filter(Game.creeps, (creep) => creep.memory.role == 'carrier');
       if (worker.length < roles['carrier'][0]) {

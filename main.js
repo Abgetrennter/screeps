@@ -4,23 +4,8 @@ let roleBuilder = require('role.builder');
 let roleRepairer = require('role.repairer');
 let beginBalance = require('begin.balance');
 let roleCarrier = require('role.carrier');
-let ini = require('init.js');
-function tower() {
-  let tower = Game.getObjectById('TOWER_ID')
-  if (tower) {
-    let closestDamagedStructure = tower.pos.findClosestByRange(
-        FIND_STRUCTURES,
-        {filter : (structure) => structure.hits < structure.hitsMax})
-    if (closestDamagedStructure) {
-      tower.repair(closestDamagedStructure)
-    }
-
-    let closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS)
-    if (closestHostile) {
-      tower.attack(closestHostile)
-    }
-  }
-}
+let init = require('init');
+init.source();
 
 /*
 function count_screeps() {
@@ -32,6 +17,7 @@ function count_screeps() {
   }
 }
 */
+
 module.exports.loop = function() {
   beginBalance.run();
   // get_structure(STRUCTURE_CONTAINER);
