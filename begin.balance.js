@@ -8,9 +8,9 @@ const roles = {
 
 module.exports = {
   run : function() {
-    if (Game.time % 8 != 0) {
+    /*if (Game.time % 8 != 0) {
       return;
-    }
+    }*/
 
     //回收内存
 
