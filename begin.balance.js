@@ -18,7 +18,7 @@ module.exports = {
       for (let name in Memory.creeps) {
         if (!Game.creeps[name]) {
           let creep = Memory.creeps[name];
-          if (creep.role == 'harvester') {
+          if (creep.role === 'harvester') {
             Memory.source[creep.memory.source] -= 1;
           }
           // console.log(targets[i].creep.name);
@@ -34,7 +34,7 @@ module.exports = {
     //优先满足采集
     {
       let worker =
-          _.filter(Game.creeps, (creep) => creep.memory.role == 'harvester');
+          _.filter(Game.creeps, (creep) => creep.memory.role === 'harvester');
       if (worker.length < roles['harvester'][0]) {
         let newName = 'harvester' + Game.time % 100;
         let target;
@@ -45,10 +45,10 @@ module.exports = {
           }
         }
 
-        flag = Game.spawns['Spawn1'].spawnCreep(
+        let flag = Game.spawns['Spawn1'].spawnCreep(
             roles['harvester'][1], newName,
-            {memory : {role : 'harvester', source : target}});
-        if (flag == OK) {
+            {memory: {role: 'harvester', source: target}});
+        if (flag === OK) {
           Memory.source[target] += 1;
         }
 
@@ -60,7 +60,7 @@ module.exports = {
       // carrier 在运送的时候也应该绑定相关的CONTAINER
       // 但是初始的时候是没有container的所以也不需要carrier
       let worker =
-          _.filter(Game.creeps, (creep) => creep.memory.role == 'carrier');
+          _.filter(Game.creeps, (creep) => creep.memory.role === 'carrier');
       if (worker.length < roles['carrier'][0]) {
         let newName = 'carrier' + Game.time % 100;
         let target;
@@ -80,7 +80,7 @@ module.exports = {
 
     {
       let worker =
-          _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
+          _.filter(Game.creeps, (creep) => creep.memory.role === 'builder');
       if (worker.length < roles['builder'][0]) {
         let newName = 'builder' + Game.time % 100;
         Game.spawns['Spawn1'].spawnCreep(roles['builder'][1], newName,
@@ -91,7 +91,7 @@ module.exports = {
 
     {
       let worker =
-          _.filter(Game.creeps, (creep) => creep.memory.role == 'upgrader');
+          _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader');
       if (worker.length < roles['upgrader'][0]) {
         let newName = 'upgrader' + Game.time % 100;
         Game.spawns['Spawn1'].spawnCreep(roles['upgrader'][1], newName,
@@ -102,13 +102,12 @@ module.exports = {
 
     {
       let worker =
-          _.filter(Game.creeps, (creep) => creep.memory.role == 'repairer');
+          _.filter(Game.creeps, (creep) => creep.memory.role === 'repairer');
       if (worker.length < roles['repairer'][0]) {
         let newName = 'repairer' + Game.time % 100;
         Game.spawns['Spawn1'].spawnCreep(
             roles['repairer'][1], newName,
             {memory : {role : 'repairer', repairing : false}});
-        return;
       }
     }
   }

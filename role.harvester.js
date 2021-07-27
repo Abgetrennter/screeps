@@ -15,7 +15,7 @@ let roleHarvester = {
       //
       // let i = cr;
       // console.log(sources[1] == Game.getObjectById(creep.memory.source));
-      if (creep.harvest(Game.getObjectById(creep.memory.source)) ==
+      if (creep.harvest(Game.getObjectById(creep.memory.source)) ===
           ERR_NOT_IN_RANGE) {
         creep.moveTo(Game.getObjectById(creep.memory.source),
                      {visualizePathStyle : {stroke : '#ffaa00'}});
@@ -23,11 +23,11 @@ let roleHarvester = {
     } else {
       let target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
         filter : (structure) => {
-          return (structure.structureType == STRUCTURE_SPAWN) &&
+          return (structure.structureType === STRUCTURE_SPAWN) &&
                  structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
         }
       });
-      if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+      if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
         creep.moveTo(target, {visualizePathStyle : {stroke : '#ffffff'}});
       }
     }

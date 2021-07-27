@@ -24,20 +24,20 @@ module.exports.loop = function() {
   // get_source()
   for (let name in Game.creeps) {
     let creep = Game.creeps[name];
-    if (creep.memory.role == 'harvester') {
+    if (creep.memory.role === 'harvester') {
       // console.log(1);
       roleHarvester.run(creep);
     }
-    if (creep.memory.role == 'upgrader') {
+    if (creep.memory.role === 'upgrader') {
       roleUpgrader.run(creep);
     }
-    if (creep.memory.role == 'builder') {
+    if (creep.memory.role === 'builder') {
       roleBuilder.run(creep);
     }
-    if (creep.memory.role == 'repairer') {
+    if (creep.memory.role === 'repairer') {
       roleRepairer.run(creep);
     }
-    if (creep.memory.role == 'carrier') {
+    if (creep.memory.role === 'carrier') {
       // console.log('123');
       roleCarrier.run(creep);
     }
