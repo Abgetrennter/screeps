@@ -13,7 +13,7 @@ function get_structure(structure_name) {
     return _.size(targets);
 }
 
-function new_container() {
+export const container = function () {
     let count = get_structure(STRUCTURE_CONTAINER);
     if (count === 0) {
         return false;
@@ -31,7 +31,7 @@ function new_container() {
     return true;
 }
 
-function new_source() {
+export const source = function () {
     let targets = Game.spawns['Spawn1'].room.find(FIND_SOURCES);
     Memory.source = {};
     // console.log(Memory.source)
@@ -50,8 +50,3 @@ function new_source() {
     }
 
 }
-
-module.exports = {
-    source: new_source,
-    container: new_container,
-};
