@@ -4,6 +4,8 @@ let roleHarvester = {
   /*
   假定harvest有属性target 为列表,包含 source 和 target 两个变量
   这样就不用每次去找了
+  刚开始还得是送货上门
+  但是说可以把绑定的进行更换.
   */
   run : function(creep) {
     if (creep.store.getFreeCapacity() > 0) {
@@ -21,7 +23,7 @@ let roleHarvester = {
     } else {
       let target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
         filter : (structure) => {
-          return (structure.structureType == STRUCTURE_CONTAINER) &&
+          return (structure.structureType == STRUCTURE_SPAWN) &&
                  structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
         }
       });
