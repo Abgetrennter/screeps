@@ -31,5 +31,3 @@ export const roleBuilder = function (creep) {
         }
     }
 };
-
-module.exports = roleBuilder;

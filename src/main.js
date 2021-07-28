@@ -1,14 +1,15 @@
-import {roleHarvester} from 'role.harvester';
-import {roleUpgrader} from 'role.upgrader';
-import {roleBuilder} from 'role.builder';
-import {roleRepairer} from 'role.repairer';
-import {config} from "./begin.balance";
-//let beginBalance = require('begin.balance');
-import {roleCarrier} from'role.carrier';
-import {source,container}  from 'init';
-import { errorMapper } from './modules/errorMapper'
-source();
 
+import {config} from "./begin.balance";
+import {source} from './init';
+import {errorMapper} from './modules/errorMapper'
+import {roleBuilder} from './role.builder';
+import {roleCarrier} from './role.carrier';
+import {roleHarvester} from './role.harvester';
+import {roleRepairer} from './role.repairer';
+import {roleUpgrader} from './role.upgrader';
+
+source();
+// TODO 添加原型文件
 /*
 function count_screeps() {
   Memory.c_screeps =
@@ -20,7 +21,7 @@ function count_screeps() {
 }
 */
 
-export const loop = errorMapper(() =>{
+export const loop = errorMapper(() => {
     config();
     // beginBalance.run();
     // get_structure(STRUCTURE_CONTAINER);
@@ -29,20 +30,20 @@ export const loop = errorMapper(() =>{
         let creep = Game.creeps[name];
         if (creep.memory.role === 'harvester') {
             // console.log(1);
-            roleHarvester.run(creep);
+            roleHarvester(creep);
         }
         if (creep.memory.role === 'upgrader') {
-            roleUpgrader.run(creep);
+            roleUpgrader(creep);
         }
         if (creep.memory.role === 'builder') {
-            roleBuilder.run(creep);
+            roleBuilder(creep);
         }
         if (creep.memory.role === 'repairer') {
-            roleRepairer.run(creep);
+            roleRepairer(creep);
         }
         if (creep.memory.role === 'carrier') {
             // console.log('123');
-            roleCarrier.run(creep);
+            roleCarrier(creep);
         }
     }
 })

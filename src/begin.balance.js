@@ -14,16 +14,16 @@ export const config = function () {
     //回收内存
 
 
-        for (let name in Memory.creeps) {
-            if (!Game.creeps[name]) {
-                let creep = Memory.creeps[name];
-                if (creep.role === 'harvester') {
-                    Memory.source[creep.memory.source] -= 1;
-                }
-                // console.log(targets[i].creep.name);
-                delete Memory.creeps[name];
+    for (let name in Memory.creeps) {
+        if (!Game.creeps[name]) {
+            let creep = Memory.creeps[name];
+            if (creep.role === 'harvester') {
+                Memory.source[creep.memory.source] -= 1;
             }
+            // console.log(targets[i].creep.name);
+            delete Memory.creeps[name];
         }
+    }
 
     /* 考虑这样一种情况,如果是发展期,我们需要增加其数量.那么补全
      * 缺失的东西这种想法就不是很好用,所以需要和预定的数目比较
