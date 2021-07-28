@@ -9,7 +9,6 @@ import {roleRepairer} from './role.repairer';
 import {roleUpgrader} from './role.upgrader';
 
 source();
-// TODO 添加原型文件
 /*
 function count_screeps() {
   Memory.c_screeps =
@@ -28,19 +27,24 @@ export const loop = errorMapper(() => {
     // get_source()
     for (let name in Game.creeps) {
         let creep = Game.creeps[name];
+        // @ts-ignore
         if (creep.memory.role === 'harvester') {
             // console.log(1);
             roleHarvester(creep);
         }
+        // @ts-ignore
         if (creep.memory.role === 'upgrader') {
             roleUpgrader(creep);
         }
+        // @ts-ignore
         if (creep.memory.role === 'builder') {
             roleBuilder(creep);
         }
+        // @ts-ignore
         if (creep.memory.role === 'repairer') {
             roleRepairer(creep);
         }
+        // @ts-ignore
         if (creep.memory.role === 'carrier') {
             // console.log('123');
             roleCarrier(creep);

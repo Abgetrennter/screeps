@@ -14,7 +14,7 @@ let consumer = null
 
 // 第一次报错时创建 sourceMap
 const getConsumer = function () {
-    if (consumer == null) consumer = new SourceMapConsumer(require("main.js.map"))
+    if (consumer == null) consumer = new SourceMapConsumer(require("main.ts.map"))
     return consumer
 }
 

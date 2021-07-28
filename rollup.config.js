@@ -1,7 +1,7 @@
 // 在代码头部引入包
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
-
+import typescript from 'rollup-plugin-typescript2'
 // ...
 import clear from 'rollup-plugin-clear'
 import screeps from 'rollup-plugin-screeps'
@@ -20,11 +20,11 @@ const pluginDeploy = config && config.copyPath ?
     copy({
         targets: [
             {
-                src: 'dist/main.js',
+                src: 'dist/main.ts',
                 dest: config.copyPath
             },
             {
-                src: 'dist/main.js.map',
+                src: 'dist/main.ts.map',
                 dest: config.copyPath,
                 rename: name => name + '.map.js',
                 transform: contents => `module.exports = ${contents.toString()};`
@@ -37,7 +37,7 @@ const pluginDeploy = config && config.copyPath ?
     screeps({ config, dryRun: !config })
 
 export default {
-    input: 'src/main.js',
+    input: 'src/main.ts',
     output: {
         file: 'dist/main.js',
         format: 'cjs',
@@ -49,6 +49,7 @@ export default {
         resolve(),
         // 模块化依赖
         commonjs(),
+        typescript({ tsconfig: "./tsconfig.json" }),
         // 执行上传或者复制
         pluginDeploy
     ]
