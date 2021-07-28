@@ -18,7 +18,7 @@ export const config = function () {
         if (!Game.creeps[name]) {
             let creep = Memory.creeps[name];
             if (creep.role === 'harvester') {
-                Memory.source[creep.memory.source] -= 1;
+                Memory.source[creep.source] -= 1;
             }
             // console.log(targets[i].creep.name);
             delete Memory.creeps[name];
@@ -44,8 +44,8 @@ export const config = function () {
                 }
             }
 
-            let flag = Game.spawns['Spawn1'].spawnCreep(
-                roles['harvester'][1], newName,
+            // @ts-ignore
+            let flag = Game.spawns['Spawn1'].spawnCreep(roles['harvester'][1], newName,
                 {memory: {role: 'harvester', source: target}});
             if (flag === OK) {
                 Memory.source[target] += 1;
@@ -70,8 +70,8 @@ export const config = function () {
                 }
             }
 
-            Game.spawns['Spawn1'].spawnCreep(
-                roles['carrier'][1], newName,
+            // @ts-ignore
+            Game.spawns['Spawn1'].spawnCreep(roles['carrier'][1], newName,
                 {memory: {role: 'carrier', container: target}});
             return;
         }
@@ -82,6 +82,7 @@ export const config = function () {
             _.filter(Game.creeps, (creep) => creep.memory.role === 'builder');
         if (worker.length < roles['builder'][0]) {
             let newName = 'builder' + Game.time % 100;
+            // @ts-ignore
             Game.spawns['Spawn1'].spawnCreep(roles['builder'][1], newName,
                 {memory: {role: 'builder'}});
             return;
@@ -93,6 +94,7 @@ export const config = function () {
             _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader');
         if (worker.length < roles['upgrader'][0]) {
             let newName = 'upgrader' + Game.time % 100;
+            // @ts-ignore
             Game.spawns['Spawn1'].spawnCreep(roles['upgrader'][1], newName,
                 {memory: {role: 'upgrader'}});
             return;
@@ -104,8 +106,8 @@ export const config = function () {
             _.filter(Game.creeps, (creep) => creep.memory.role === 'repairer');
         if (worker.length < roles['repairer'][0]) {
             let newName = 'repairer' + Game.time % 100;
-            Game.spawns['Spawn1'].spawnCreep(
-                roles['repairer'][1], newName,
+            // @ts-ignore
+            Game.spawns['Spawn1'].spawnCreep(roles['repairer'][1], newName,
                 {memory: {role: 'repairer', repairing: false}});
         }
     }

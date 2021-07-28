@@ -1,13 +1,13 @@
-export const roleBuilder = function (creep) {
+export const roleBuilder = function (creep: Creep) {
 
-    if (creep.memory.building && creep.store[RESOURCE_ENERGY] === 0) {
-        creep.memory.building = false;
+    if (creep.memory.Working && creep.store[RESOURCE_ENERGY] === 0) {
+        creep.memory.Working = false;
     }
-    if (!creep.memory.building && creep.store.getFreeCapacity() === 0) {
-        creep.memory.building = true;
+    if (!creep.memory.Working && creep.store.getFreeCapacity() === 0) {
+        creep.memory.Working = true;
     }
 
-    if (creep.memory.building) {
+    if (creep.memory.Working) {
         let targets = creep.room.find(FIND_CONSTRUCTION_SITES);
         // targets.sort((a, b) => (a.process - b.process))
         if (targets.length) {
@@ -23,8 +23,8 @@ export const roleBuilder = function (creep) {
                     structure.store[RESOURCE_ENERGY] > 0);
             }
         });
-        sources.sort((a, b) =>
-            (-a.store[RESOURCE_ENERGY] + b.store[RESOURCE_ENERGY]))
+        // @ts-ignore
+        sources.sort((a, b) => (-a.store[RESOURCE_ENERGY] + b.store[RESOURCE_ENERGY]))
         if (creep.withdraw(sources[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE &&
             creep.transfer(sources[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
             creep.moveTo(sources[0], {visualizePathStyle: {stroke: '#ffaa00'}});

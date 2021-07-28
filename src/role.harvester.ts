@@ -6,7 +6,7 @@ export const roleHarvester =
     刚开始还得是送货上门
     但是说可以把绑定的进行更换.
     */
-    function (creep) {
+    function (creep:Creep) {
         if (creep.store.getFreeCapacity() > 0) {
             let sources = creep.room.find(FIND_SOURCES);
             // console.log(sources[0].pos.x)

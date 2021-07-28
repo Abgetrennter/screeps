@@ -27,24 +27,19 @@ export const loop = errorMapper(() => {
     // get_source()
     for (let name in Game.creeps) {
         let creep = Game.creeps[name];
-        // @ts-ignore
         if (creep.memory.role === 'harvester') {
             // console.log(1);
             roleHarvester(creep);
         }
-        // @ts-ignore
         if (creep.memory.role === 'upgrader') {
             roleUpgrader(creep);
         }
-        // @ts-ignore
         if (creep.memory.role === 'builder') {
             roleBuilder(creep);
         }
-        // @ts-ignore
         if (creep.memory.role === 'repairer') {
             roleRepairer(creep);
         }
-        // @ts-ignore
         if (creep.memory.role === 'carrier') {
             // console.log('123');
             roleCarrier(creep);
