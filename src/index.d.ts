@@ -3,9 +3,9 @@ interface CreepMemory {
      * 该 creep 的角色
      */
     role: string,
-    source:Id<Source>,
-    container:Id<StructureContainer>,
-    Working:boolean,
+    source?:Id<Source>,
+    target?:Id<object>,
+    Working?:boolean,
 }
 interface Memory {
     /**

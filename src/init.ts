@@ -13,23 +13,6 @@ function get_structure(structure_name) {
     return _.size(targets);
 }
 
-export const container = function () {
-    let count = get_structure(STRUCTURE_CONTAINER);
-    if (count === 0) {
-        return false;
-    }
-    let workers =
-        _.filter(Game.creeps, (creep) => creep.memory.role === 'carrier');
-    for (let i in workers) {
-        let creep = workers[i];
-        console.log(creep);
-        if (!creep.memory.container) {
-            continue;
-        }
-        Memory[STRUCTURE_CONTAINER][creep.memory.container] += 1;
-    }
-    return true;
-}
 
 export const source = function () {
     let targets = Game.spawns['Spawn1'].room.find(FIND_SOURCES);

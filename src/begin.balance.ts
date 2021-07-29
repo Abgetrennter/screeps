@@ -1,19 +1,12 @@
-const roles = {
-    'harvester': [4, [WORK, CARRY, MOVE]],
-    'upgrader': [2, [WORK, CARRY, MOVE]],
-    'builder': [2, [WORK, CARRY, MOVE]],
-    'repairer': [0, [WORK, CARRY, MOVE, MOVE]],
-    'carrier': [0, [WORK, CARRY, MOVE]]
+let roles = {
+    'harvester': {count:4, body:[WORK, CARRY, MOVE]},
+    'upgrader': {count:2, body:[WORK, CARRY, MOVE]},
+    'builder': {count:2, body:[WORK, CARRY, MOVE]},
+    'repairer': {count:0, body:[WORK, CARRY, MOVE, MOVE]},
+    'carrier': {count:0, body:[WORK, CARRY, MOVE]}
 }; //配置文件
 
-export const config = function () {
-    /*if (Game.time % 8 != 0) {
-      return;
-    }*/
-
-    //回收内存
-
-
+function gc(){
     for (let name in Memory.creeps) {
         if (!Game.creeps[name]) {
             let creep = Memory.creeps[name];
@@ -24,6 +17,16 @@ export const config = function () {
             delete Memory.creeps[name];
         }
     }
+}
+
+
+export const config = function () {
+    /*if (Game.time % 8 != 0) {
+      return;
+    }*/
+
+    //回收内存
+    gc();
 
     /* 考虑这样一种情况,如果是发展期,我们需要增加其数量.那么补全
      * 缺失的东西这种想法就不是很好用,所以需要和预定的数目比较
@@ -34,7 +37,7 @@ export const config = function () {
     {
         let worker =
             _.filter(Game.creeps, (creep) => creep.memory.role === 'harvester');
-        if (worker.length < roles['harvester'][0]) {
+        if (worker.length < roles['harvester']['count']) {
             let newName = 'harvester' + Game.time % 100;
             let target;
             for (let i in Memory.source) {
@@ -45,7 +48,7 @@ export const config = function () {
             }
 
             // @ts-ignore
-            let flag = Game.spawns['Spawn1'].spawnCreep(roles['harvester'][1], newName,
+            let flag = Game.spawns['Spawn1'].spawnCreep(roles['harvester']['body'], newName,
                 {memory: {role: 'harvester', source: target}});
             if (flag === OK) {
                 Memory.source[target] += 1;
@@ -60,19 +63,12 @@ export const config = function () {
         // 但是初始的时候是没有container的所以也不需要carrier
         let worker =
             _.filter(Game.creeps, (creep) => creep.memory.role === 'carrier');
-        if (worker.length < roles['carrier'][0]) {
+        if (worker.length < roles['carrier']['count']) {
             let newName = 'carrier' + Game.time % 100;
-            let target;
-            for (let i in Memory[STRUCTURE_CONTAINER]) {
-                if (Memory.source[i] < 2) {
-                    target = i;
-                    break;
-                }
-            }
 
             // @ts-ignore
-            Game.spawns['Spawn1'].spawnCreep(roles['carrier'][1], newName,
-                {memory: {role: 'carrier', container: target}});
+            Game.spawns['Spawn1'].spawnCreep(roles['carrier']['body'], newName,
+                {memory: {role: 'carrier'}});
             return;
         }
     }
@@ -80,10 +76,10 @@ export const config = function () {
     {
         let worker =
             _.filter(Game.creeps, (creep) => creep.memory.role === 'builder');
-        if (worker.length < roles['builder'][0]) {
+        if (worker.length < roles['builder']['count']) {
             let newName = 'builder' + Game.time % 100;
             // @ts-ignore
-            Game.spawns['Spawn1'].spawnCreep(roles['builder'][1], newName,
+            Game.spawns['Spawn1'].spawnCreep(roles['builder']['body'], newName,
                 {memory: {role: 'builder'}});
             return;
         }
@@ -92,10 +88,10 @@ export const config = function () {
     {
         let worker =
             _.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader');
-        if (worker.length < roles['upgrader'][0]) {
+        if (worker.length < roles['upgrader']['count']) {
             let newName = 'upgrader' + Game.time % 100;
             // @ts-ignore
-            Game.spawns['Spawn1'].spawnCreep(roles['upgrader'][1], newName,
+            Game.spawns['Spawn1'].spawnCreep(roles['upgrader']['body'], newName,
                 {memory: {role: 'upgrader'}});
             return;
         }
@@ -104,11 +100,11 @@ export const config = function () {
     {
         let worker =
             _.filter(Game.creeps, (creep) => creep.memory.role === 'repairer');
-        if (worker.length < roles['repairer'][0]) {
+        if (worker.length < roles['repairer']['count']) {
             let newName = 'repairer' + Game.time % 100;
             // @ts-ignore
-            Game.spawns['Spawn1'].spawnCreep(roles['repairer'][1], newName,
-                {memory: {role: 'repairer', repairing: false}});
+            Game.spawns['Spawn1'].spawnCreep(roles['repairer']['body'], newName,
+                {memory: {role: 'repairer', Working: false}});
         }
     }
 }
