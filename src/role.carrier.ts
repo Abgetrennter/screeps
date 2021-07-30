@@ -63,7 +63,7 @@ export const roleCarrier = function (creep: Creep) {
             flag = creep.withdraw(target, RESOURCE_ENERGY);
         }
 
-        // console.log(flag);
+        //console.log(flag);
         if (flag === ERR_NOT_IN_RANGE) {
             creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
         } else if (flag === OK) {

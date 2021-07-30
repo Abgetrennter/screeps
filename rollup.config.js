@@ -1,9 +1,7 @@
-// 在代码头部引入包
+import clear from 'rollup-plugin-clear'
 import resolve from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import typescript from 'rollup-plugin-typescript2'
-// ...
-import clear from 'rollup-plugin-clear'
 import screeps from 'rollup-plugin-screeps'
 import copy from 'rollup-plugin-copy'
 
@@ -15,16 +13,16 @@ else if (!(config = require("./.secret.json")[process.env.DEST])) {
 }
 
 // 根据指定的配置决定是上传还是复制到文件夹
-const pluginDeploy = config && config.copyPath ?
+const pluginBeforeBuild = config && config.copyPath ?
     // 复制到指定路径
     copy({
         targets: [
             {
-                src: 'dist/main.ts',
+                src: 'dist/main.js',
                 dest: config.copyPath
             },
             {
-                src: 'dist/main.ts.map',
+                src: 'dist/main.js.map',
                 dest: config.copyPath,
                 rename: name => name + '.map.js',
                 transform: contents => `module.exports = ${contents.toString()};`
@@ -46,11 +44,13 @@ export default {
     plugins: [
         // 清除上次编译成果
         clear({ targets: ["dist"] }),
+        // 打包依赖
         resolve(),
         // 模块化依赖
         commonjs(),
+        // 编译 ts
         typescript({ tsconfig: "./tsconfig.json" }),
         // 执行上传或者复制
-        pluginDeploy
+        pluginBeforeBuild
     ]
 };
