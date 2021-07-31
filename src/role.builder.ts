@@ -14,20 +14,15 @@ export const roleBuilder = function (creep: Creep) {
             if (creep.build(targets[0]) === ERR_NOT_IN_RANGE) {
                 creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
             }
+        }else{
+            if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
+                creep.moveTo(creep.room.controller,
+                    {visualizePathStyle: {stroke: '#ffffff'}});
+            }
         }
     } else {
-        let sources = creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return ((structure.structureType === STRUCTURE_CONTAINER ||
-                        structure.structureType === STRUCTURE_SPAWN) &&
-                    structure.store[RESOURCE_ENERGY] > 0);
-            }
-        });
-        // @ts-ignore
-        sources.sort((a, b) => (-a.store[RESOURCE_ENERGY] + b.store[RESOURCE_ENERGY]))
-        if (creep.withdraw(sources[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE &&
-            creep.transfer(sources[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(sources[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+        if (creep.withdraw(Game.spawns['Spawn1'], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+            creep.moveTo(Game.spawns['Spawn1'], {visualizePathStyle: {stroke: '#ffaa00'}});
         }
     }
 };
