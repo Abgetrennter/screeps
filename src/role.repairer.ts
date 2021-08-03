@@ -7,8 +7,12 @@ export const roleRepairer = function (creep) {
     }
 
     if (creep.memory.Working) {
-        let targets:AnyStructure[] = creep.room.find(
-            FIND_STRUCTURES, {filter: object => object.hits < object.hitsMax})
+        let targets: AnyStructure[] = creep.room.find(
+            FIND_STRUCTURES, {
+                filter: object =>
+                    (object.hits < object.hitsMax
+                        && (object.structureType !== STRUCTURE_WALL))
+            })
         targets.sort((a, b) => a.hits - b.hits);
         // targets.sort((a, b) => a.hits - b.hits);
         if (targets.length) {
@@ -17,10 +21,12 @@ export const roleRepairer = function (creep) {
             }
         }
     } else {
-        let sources:AnyStructure[] = creep.room.find(FIND_STRUCTURES, {
+        let sources: AnyStructure[] = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return (structure.structureType === STRUCTURE_CONTAINER ||
-                        structure.structureType === STRUCTURE_STORAGE) &&
+                        structure.structureType === STRUCTURE_STORAGE ||
+                        structure.structureType === STRUCTURE_SPAWN
+                        ) &&
                     structure.store[RESOURCE_ENERGY] > 0;
             }
         });

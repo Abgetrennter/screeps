@@ -1,7 +1,7 @@
-
+import './creep.prototype';
 import {config} from "./begin.balance";
 import {source} from './init';
-import {errorMapper} from './modules/errorMapper'
+import { ErrorMapper } from './modules/errorMapper';
 import {roleBuilder} from './role.builder';
 import {roleCarrier} from './role.carrier';
 import {roleHarvester} from './role.harvester';
@@ -19,8 +19,32 @@ function count_screeps() {
   }
 }
 */
+function tower() {
+    let towers = Game.spawns['Spawn1'].room.find<StructureTower>(FIND_STRUCTURES, {
+        filter:
+            (structure) => {
+                return (structure.structureType === STRUCTURE_TOWER);
+            }
+    });
+    if (towers) {
+        for (let tower_name in towers) {
+            let tower=towers[tower_name];
+            let closestDamagedStructure = tower.pos.findClosestByRange(
+                FIND_STRUCTURES,
+                {filter: (structure) => (structure.hits < structure.hitsMax&&structure.hits<3000)});
+            if (closestDamagedStructure) {
+                tower.repair(closestDamagedStructure);
+            }
 
-export const loop = errorMapper(() => {
+            let closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+            if (closestHostile) {
+                tower.attack(closestHostile);
+            }
+        }
+    }
+}
+export const loop = ErrorMapper.wrapLoop(() => {
+    tower();
     config();
     // beginBalance.run();
     // get_structure(STRUCTURE_CONTAINER);

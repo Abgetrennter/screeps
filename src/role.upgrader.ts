@@ -15,6 +15,7 @@ function get_source(creep){
 }
 
 export const roleUpgrader = function (creep:Creep) {
+    //creep.say("123");
     if (creep.memory.Working && creep.store[RESOURCE_ENERGY] === 0) {
         creep.memory.Working = false;
         get_source(creep);

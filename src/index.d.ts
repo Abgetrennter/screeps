@@ -3,14 +3,22 @@ interface CreepMemory {
      * 该 creep 的角色
      */
     role: string,
-    source?:Id<Source>,
-    target?:Id<object>,
+    source?:string,
+    target?:string,
     Working?:boolean,
 }
 interface Memory {
     /**
      * 储存的东西
      */
-    container:object,
-    source:object,
+    container?:My_memory_structure,
+    source:My_memory_structure,
+}
+interface My_memory_structure {
+    [key: string]: number,
+}
+
+interface Creep {
+    source:AnyStructure,
+    target:AnyStructure,
 }
