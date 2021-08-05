@@ -31,7 +31,8 @@ function tower() {
             let tower=towers[tower_name];
             let closestDamagedStructure = tower.pos.findClosestByRange(
                 FIND_STRUCTURES,
-                {filter: (structure) => (structure.hits < structure.hitsMax&&structure.hits<3000)});
+                {filter: (structure) => (structure.hits < structure.hitsMax&&structure.hits<3000)
+                        ||(structure.structureType==STRUCTURE_CONTAINER&&structure.hits<100000)});
             if (closestDamagedStructure) {
                 tower.repair(closestDamagedStructure);
             }

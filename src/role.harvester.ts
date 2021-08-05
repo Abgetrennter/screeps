@@ -44,15 +44,20 @@ export const roleHarvester = function (creep: Creep) {
      *刚开始还得是送货上门
      *但是说可以把绑定的进行更换.
     **/
+
     if (creep.store.getFreeCapacity() > 0) {
 
         if (creep.harvest(Game.getObjectById(creep.memory.source as Id<Source>)) ===
             ERR_NOT_IN_RANGE) {
             let flag=creep.moveTo(Game.getObjectById(creep.memory.source as Id<Source>),
                 {visualizePathStyle: {stroke: '#ffaa00'}});
-            if (flag===ERR_NO_PATH){
-                creep.memory.role='builder';
-            }
+            /*if (flag===ERR_NO_PATH){
+                for (let i in Memory.source) {
+                    if (i!=creep.memory.source){
+                        creep.memory.source=i;
+                    }
+                }
+            }*/
         }
     } else {
         let target=Game.getObjectById(creep.memory.target as Id<any>);
@@ -60,13 +65,15 @@ export const roleHarvester = function (creep: Creep) {
         //get_target(creep);
         if (Game.time%300||!target){
             get_target(creep);
+            target=Game.getObjectById(creep.memory.target as Id<any>);
         }
         //let target=Game.spawns['Spawn1'];
         // @ts-ignore
-        if (target.hits<210000){
+        /*if (target.hits<150000){
+
             creep.repair(target);
             return;
-        }
+        }*/
         if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
             // @ts-ignore
             creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});

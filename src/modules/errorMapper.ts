@@ -86,6 +86,7 @@ export class ErrorMapper {
                         `${_.escape(this.sourceMappedStackTrace(e))}`
 
                     console.log(errorMessage)
+                    throw e;
                 }
                 // 处理不了，直接抛出
                 else throw e

@@ -6,6 +6,7 @@ interface CreepMemory {
     source?:string,
     target?:string,
     Working?:boolean,
+    condition:number,
 }
 interface Memory {
     /**
@@ -16,9 +17,4 @@ interface Memory {
 }
 interface My_memory_structure {
     [key: string]: number,
-}
-
-interface Creep {
-    source:AnyStructure,
-    target:AnyStructure,
 }
