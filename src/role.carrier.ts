@@ -1,22 +1,47 @@
-function init(creep: Creep){
-    if (creep.ticksToLive){}
+/**n 种状态,
+ * init/default 初始化,
+ * search 搜索资源,
+ * pickup 拾取掉落的资源,
+ * trans 从容器中提取资源,
+ * carry 送到spawn ex 塔中,
+ * die 要死了丢掉资源,
+ */
+enum state {
+    Source,
+    Pickup,
+    Trans,
+    Carry,
+    Die,
+    Init
 }
 
-function get_resource(creep: Creep) {
-    let targets = creep.room.find<FIND_DROPPED_RESOURCES>(FIND_DROPPED_RESOURCES);
-    if (targets.length > 0) {
-        targets.sort((a, b) => (b.amount - a.amount));
-        return targets[0];
+
+function init(creep: Creep) :void{
+    if (creep.ticksToLive < 20) {
+        creep.memory.condition = state.Die;
+    } else if (creep.store[RESOURCE_ENERGY] === 0) {
+        creep.memory.condition = state.Source;
     } else {
-        return null;
+        creep.memory.condition = state.Carry;
     }
 }
 
-function get_ruin(creep: Creep) {
+
+/*function get_ruin(creep: Creep) {
     let temp = [];
     let targets = temp.concat(creep.room.find(FIND_TOMBSTONES), creep.room.find(FIND_RUINS));
     if (targets.length > 0) {
         targets.sort((a, b) => (a.ticksToDecay - b.ticksToDecay));
+        return targets[0];
+    } else {
+        return null;
+    }
+}*/
+
+function get_resource(creep: Creep): Resource {
+    let targets = creep.room.find<FIND_DROPPED_RESOURCES>(FIND_DROPPED_RESOURCES);
+    if (targets.length > 0) {
+        targets.sort((a, b) => (b.amount - a.amount));
         return targets[0];
     } else {
         return null;
@@ -27,8 +52,7 @@ function get_SourceStructures(creep: Creep): AnyStoreStructure {
     let sources = creep.pos.findClosestByPath<StructureContainer>(FIND_STRUCTURES, {
         filter: (structure) => {
             return (structure.structureType === STRUCTURE_CONTAINER &&
-                structure.store[RESOURCE_ENERGY] > 0
-                && structure.id != creep.memory.target);
+                structure.store[RESOURCE_ENERGY] > 0);
         }
     });
 
@@ -37,138 +61,124 @@ function get_SourceStructures(creep: Creep): AnyStoreStructure {
         sources.sort((a, b) => (b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]));
     */
     if (sources) {
-        creep.memory.source = sources.id;
         return sources;
     } else {
         return null;
     }
 }
 
-function get_source(creep: Creep) {
-    let target:any=get_resource(creep);
-    if (!target)    target = get_SourceStructures(creep);
+function do_source(creep: Creep):void {
+    let resource = get_resource(creep);
+    if (!resource) {
+        let source = get_SourceStructures(creep);
+        if (!source) {
+            creep.memory.condition = state.Source;
+            return;
+        } else {
+            creep.memory.condition = state.Trans;
+            let flag = creep.withdraw(source, RESOURCE_ENERGY);
+            //console.log(flag);
+            if (flag === ERR_NOT_IN_RANGE) {
+                creep.moveTo(source, {visualizePathStyle: {stroke: '#ffffff'}});
+                return;
+            }
+        }
+    } else {
+        creep.memory.condition = state.Pickup;
+        let flag = creep.pickup(resource);
+        //console.log(flag);
+        if (flag === ERR_NOT_IN_RANGE) {
+            creep.moveTo(resource, {visualizePathStyle: {stroke: '#ffffff'}});
+            return;
+        }
+    }
 
-    return target;
+    if (creep.store.getFreeCapacity()===0) creep.memory.condition= state.Carry;
 }
 
-function get_target(creep: Creep) {
-    let targets = creep.room.find<AnyStoreStructure>(FIND_STRUCTURES, {
+function get_target(creep: Creep) :AnyStoreStructure{
+    let target = creep.pos.findClosestByPath<AnyStoreStructure>(FIND_STRUCTURES, {
         filter: (structure) => {
             return ((structure.structureType === STRUCTURE_EXTENSION ||
-                structure.structureType === STRUCTURE_SPAWN)
+                    structure.structureType === STRUCTURE_SPAWN)
                 &&
                 structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
         }
     });
-    if (targets.length) {
-        // @ts-ignore
-        //targets.sort((a, b) => (a.store.getFreeCapacity() - b.store.getFreeCapacity()));
-    } else {
-        targets = creep.room.find<AnyStoreStructure>(FIND_STRUCTURES, {
+    if (!target) {
+        target = creep.pos.findClosestByPath<AnyStoreStructure>(FIND_STRUCTURES, {
             filter: (structure) => {
                 return (structure.structureType === STRUCTURE_TOWER) &&
                     structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
             }
         });
-        if (targets.length){
-            targets=creep.room.find<AnyStoreStructure>(FIND_STRUCTURES,{
-                filter:(structure)=>{
-                    return(structure.structureType === STRUCTURE_CONTAINER &&
-                        structure.id != creep.memory.source&&structure.store.getFreeCapacity(RESOURCE_ENERGY)>0);
+        if (!target) {
+            target = creep.pos.findClosestByPath<AnyStoreStructure>(FIND_STRUCTURES, {
+                filter: (structure) => {
+                    return (structure.structureType === STRUCTURE_STORAGE&&structure.store.getFreeCapacity()>0);
                 }
             });
-
+            if (!target){
+                return ;
+            }
         }
 
     }
-    if (!targets[0]) {
-        return null;
-    }
-    creep.memory.target = targets[0].id;
-    return targets[0];
+    //creep.memory.target = target[0].id;
+    return target;
 }
 
-function to_die(creep:Creep): void{
-    if (creep.store.getUsedCapacity()===0){
-        return;
+function do_carry(creep:Creep){
+    let target=get_target(creep);
+    if (!target) return;
+
+    let flag: number;
+    flag = creep.transfer(target, RESOURCE_ENERGY);
+    if (flag === ERR_NOT_IN_RANGE) {
+        creep.moveTo(target,
+            {visualizePathStyle: {stroke: '#ffffff'}});
+    } else if (flag === OK) {
+        //creep.memory.target = null;
+        if (creep.store.getUsedCapacity()>0){
+            creep.memory.condition=state.Source;
+        }
     }
-    else{
+}
+
+function to_die(creep: Creep): void {
+    if (creep.store.getUsedCapacity() === 0) {
+        return;
+    } else {
         creep.drop(RESOURCE_ENERGY);
         return;
     }
 }
-/**n 种状态,
- * 0/default 初始化
- * 1 拾取掉落的资源
- * 2 从容器中提取资源
- * 3 送到spawn ex 塔中
- * 4 要死了丢掉资源
- */
 
 
 export const roleCarrier = function (creep: Creep) {
-    /*switch (creep.memory.condition) {
-        case 1:{
-            do_pickup();
+    switch (creep.memory.condition) {
+        case state.Source:
+        case state.Pickup:
+        case state.Trans: {
+            do_source(creep);
             break;
         }
-        case 2:{
-            do_trans();
+
+        case state.Carry: {
+            do_carry(creep);
             break;
         }
-        case 3:{
-            do_casrry();
-            break;
-        }
-        case 4:{
+        case state.Die: {
             to_die(creep);
             break;
         }
-        default:{
-            init();
-        }
-    }*/
-    if (creep.store[RESOURCE_ENERGY] === 0) {
-        // console.log('123');
-        /*let source=Game.getObjectById(creep.memory.source as Id<AnyStructure>);;
-
-        if (!source) {
-            source = get_source(creep);
-            if (!source)return;
-        }*/
-        let source = get_source(creep);
-        let flag: number;
-        flag = creep.withdraw(source, RESOURCE_ENERGY);
-
-        //console.log(flag);
-        if (flag === ERR_NOT_IN_RANGE) {
-            creep.moveTo(source, {visualizePathStyle: {stroke: '#ffffff'}});
-        } else if (flag === OK) {
-            //creep.memory.source = null;
-        } else {
-            get_source(creep);
-        }
-    } else {
-        let target = get_target(creep);
-        if (!target) return;
-        //creep.room.visual.circle(target.pos,{fill: 'transparent', radius: 0.55, stroke: 'red'});
-        /*if (!creep.memory.target) {
-            target = get_target(creep);
-            if (!target){
-                return;
-            }
-        } else {
-            target = Game.getObjectById(creep.memory.target as Id<StructureSpawn>);
-        }*/
-        let flag: number;
-        flag = creep.transfer(target, RESOURCE_ENERGY);
-        if (flag === ERR_NOT_IN_RANGE) {
-            creep.moveTo(target,
-                {visualizePathStyle: {stroke: '#ffffff'}});
-        } else if (flag === OK) {
-            //creep.memory.target = null;
-        } else {
-            get_target(creep);
+        case state.Init:
+        default: {
+            init(creep);
         }
     }
+    if (creep.ticksToLive < 20) {
+        creep.memory.condition = state.Die;
+    }
+
 };

@@ -6,15 +6,24 @@ interface CreepMemory {
     source?:string,
     target?:string,
     Working?:boolean,
-    condition:number,
+    condition?:number,
 }
+interface RoomMemory {
+    ava:number,
+}
+
 interface Memory {
     /**
      * 储存的东西
      */
-    container?:My_memory_structure,
-    source:My_memory_structure,
+    container?:object,
+    source:object,
 }
+/*
 interface My_memory_structure {
     [key: string]: number,
+}
+*/
+interface StructureSpawn{
+    AvailableEnergy():void,
 }

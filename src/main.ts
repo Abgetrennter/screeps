@@ -1,4 +1,4 @@
-import './creep.prototype';
+import './spawn.prototype';
 import {config} from "./begin.balance";
 import {source} from './init';
 import { ErrorMapper } from './modules/errorMapper';
@@ -29,12 +29,13 @@ function tower() {
     if (towers) {
         for (let tower_name in towers) {
             let tower=towers[tower_name];
-            let closestDamagedStructure = tower.pos.findClosestByRange(
+            let DamagedStructure = tower.room.find(
                 FIND_STRUCTURES,
-                {filter: (structure) => (structure.hits < structure.hitsMax&&structure.hits<3000)
+                {filter: (structure) => (structure.hits < structure.hitsMax&&structure.hits<1000)
                         ||(structure.structureType==STRUCTURE_CONTAINER&&structure.hits<100000)});
-            if (closestDamagedStructure) {
-                tower.repair(closestDamagedStructure);
+            if (DamagedStructure.length) {
+                DamagedStructure.sort((a,b)=>a.hits-b.hits);
+                tower.repair(DamagedStructure[0]);
             }
 
             let closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);

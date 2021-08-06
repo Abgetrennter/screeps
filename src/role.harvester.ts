@@ -1,18 +1,25 @@
-import {size_for_source} from "@/begin.balance";
+import {config, size_for_source} from "@/begin.balance";
+
 
 function get_target(creep) {
-    let target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+    let target = creep.room.find(FIND_STRUCTURES, {
         filter: (structure) => {
-            return (structure.structureType === STRUCTURE_CONTAINER) &&
-                structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+            return (structure.structureType === STRUCTURE_TOWER) &&
+                structure.store.getUsedCapacity(RESOURCE_ENERGY) <300;
         }
     });
     let count=_.filter(Game.creeps, (creep) => creep.memory.role === 'carrier').length;
     //if (target === null&&count==0) {
-    if(!count||!target){
-        target = Game.spawns['Spawn1'];
+    if(target.length===0){
+        target =creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                return ((structure.structureType === STRUCTURE_EXTENSION ||
+                        structure.structureType === STRUCTURE_SPAWN) );
+            }
+        });
+        //target=target[0];
     }
-    creep.memory.target=target.id;
+    creep.memory.target=target[0].id;
 }
 
 function init_source(creep){
@@ -62,8 +69,8 @@ export const roleHarvester = function (creep: Creep) {
     } else {
         let target=Game.getObjectById(creep.memory.target as Id<any>);
         //get_target(creep);
-        //get_target(creep);
-        if (Game.time%300||!target){
+        get_target(creep);
+        if (Game.time%10||!target){
             get_target(creep);
             target=Game.getObjectById(creep.memory.target as Id<any>);
         }
@@ -74,9 +81,14 @@ export const roleHarvester = function (creep: Creep) {
             creep.repair(target);
             return;
         }*/
-        if (creep.transfer(target, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
+        let flag=creep.transfer(target, RESOURCE_ENERGY)
+        if (flag === ERR_NOT_IN_RANGE) {
             // @ts-ignore
             creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+        }else if (flag ===OK){
+
+        }else{
+            get_target(creep);
         }
     }
 };
