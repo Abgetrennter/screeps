@@ -2,15 +2,11 @@ import {size_for_source} from "@/begin.balance";
 
 
 function get_target(creep) {
-    let target = creep.room.find(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return (structure.structureType === STRUCTURE_TOWER) &&
-                structure.store.getUsedCapacity(RESOURCE_ENERGY) < 300;
-        }
-    });
+    let target = creep.room.tower;
+
     let count = _.filter(Game.creeps, (creep) => creep.memory.role === 'carrier').length;
     //if (target === null&&count==0) {
-    if (target.length === 0&&count===0) {
+    if ((target.length===0||target[0].store[RESOURCE_ENERGY]>500)&&count===0) {
         /*(target = creep.room.find(FIND_STRUCTURES, {
             filter: (structure) => {
                 return ((structure.structureType === STRUCTURE_EXTENSION ||
@@ -22,10 +18,11 @@ function get_target(creep) {
         if (!target) {
             target = [creep.room.spawn];
         })*/
-        target=Game.spawns['Spawn1'].room.spawn.
-        concat(Game.spawns['Spawn1'].room.extension).
-        sort((a, b) => a.store.getFreeCapacity() - b.store.getFreeCapacity());
-    }else if (target.length === 0){
+        target=Game.spawns['Spawn1'].room.extension.
+        concat(Game.spawns['Spawn1'].room.spawn).
+        sort((a, b) => a.store.getUsedCapacity(RESOURCE_ENERGY) - b.store.getUsedCapacity(RESOURCE_ENERGY));
+        //console.log(target);
+    }else if (target[0].store[RESOURCE_ENERGY]>500){
         target=creep.pos.findClosestByPath(FIND_STRUCTURES, {
             filter: (structure) => {
                 return (structure.structureType === STRUCTURE_CONTAINER) &&
@@ -34,7 +31,7 @@ function get_target(creep) {
         });
         target=[target];
     }
-    if (target[0].store.getFreeCapacity(RESOURCE_ENERGY)===0){
+    if (!target){
         target[0]=creep.room.storage;
     }
     creep.memory.target = target[0].id;
@@ -73,9 +70,11 @@ export const roleHarvester = function (creep: Creep) {
     if (creep.goDie()) return;
     if (creep.store.getFreeCapacity() > 0) {
 
-        if (creep.harvest(Game.getObjectById(creep.memory.source as Id<Source>)) ===
+        const source = Game.getObjectById(creep.memory.source as Id<Source>);
+        if (creep.harvest(source) ===
             ERR_NOT_IN_RANGE) {
-            creep.moveTo(Game.getObjectById(creep.memory.source as Id<Source>),
+            creep.room.visual.circle(source.pos,{fill: 'transparent', radius: 0.55, stroke: 'blue'});
+            creep.moveTo(source,
                 {visualizePathStyle: {stroke: '#ffaa00'}});
             /*if (flag===ERR_NO_PATH){
                             for (let i in Memory.source) {
@@ -89,10 +88,10 @@ export const roleHarvester = function (creep: Creep) {
         let target = Game.getObjectById(creep.memory.target as Id<any>);
         //get_target(creep);
         get_target(creep);
-        if (Game.time % 10 || !target) {
+        /*if (Game.time % 10 || !target) {
             get_target(creep);
             target = Game.getObjectById(creep.memory.target as Id<any>);
-        }
+        }*/
         //let target=Game.spawns['Spawn1'];
         // @ts-ignore
         /*if (target.hits<150000){

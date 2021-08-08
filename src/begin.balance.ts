@@ -129,7 +129,7 @@ function all_available_energy(room:Room):number{
     return ava;
 }
 
-export const config = function () {
+export const config = function (room:Room) {
     if (Game.time % 57 != 0) {
         return;
     }
@@ -137,14 +137,14 @@ export const config = function () {
     //回收内存
     gc();
 
-    if (all_available_energy(Game.rooms['E22S59'])<350){
+    if (all_available_energy(Game.spawns['Spawn1'].room)<350){
         roles['builder']['count']=0;
         roles['upgrader']['count']=0;
         size_for_source=3;
     }else{
         roles['builder']['count']=3;
         roles['upgrader']['count']=2;
-        size_for_source=3-Game.rooms['E22S59'].container.length;
+        size_for_source=3-Game.spawns['Spawn1'].room.container.length;
     }
 
 

@@ -49,7 +49,10 @@ function tower() {
 }
 export const loop = ErrorMapper.wrapLoop(() => {
     tower();
-    config();
+    for (let room in Game.rooms) {
+        config( Game.rooms[room]);
+    }
+
     // beginBalance.run();
     // get_structure(STRUCTURE_CONTAINER);
     // get_source()

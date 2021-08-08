@@ -1,6 +1,6 @@
 Creep.prototype.goDie=function (){
     if(this.ticksToLive<20&&this.ticksToLive>10){
-        this.moveTo(this.room.controller);
+        this.moveTo(this.room.spawn[0]);
         return true;
     }else if (this.ticksToLive<=10){
         this.drop(RESOURCE_ENERGY);

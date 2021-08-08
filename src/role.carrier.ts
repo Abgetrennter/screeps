@@ -42,7 +42,7 @@ function get_resource(creep: Creep): Resource {
     let targets = creep.room.find<FIND_DROPPED_RESOURCES>(FIND_DROPPED_RESOURCES);
     if (targets.length > 0) {
         targets.sort((a, b) => (b.amount - a.amount));
-        creep.say('I get the resource');
+        creep.say('resource');
         return targets[0];
     } else {
         return null;
@@ -78,6 +78,7 @@ function do_source(creep: Creep):void {
             let flag = creep.withdraw(source, RESOURCE_ENERGY);
             //console.log(flag);
             if (flag === ERR_NOT_IN_RANGE) {
+                creep.room.visual.circle(source.pos,{fill: 'transparent', radius: 0.55, stroke: 'green'});
                 creep.moveTo(source, {visualizePathStyle: {stroke: '#ffffff'}});
                 return;
             }
@@ -87,6 +88,7 @@ function do_source(creep: Creep):void {
         let flag = creep.pickup(resource);
         //console.log(flag);
         if (flag === ERR_NOT_IN_RANGE) {
+            creep.room.visual.circle(resource.pos,{fill: 'transparent', radius: 0.55, stroke: 'yellow'});
             creep.moveTo(resource, {visualizePathStyle: {stroke: '#ffffff'}});
             return;
         }

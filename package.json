@@ -3,7 +3,8 @@
   "scripts": {
     "start": "rollup -cw --environment DEST:main",
     "local": "rollup -cw --environment DEST:local",
-    "build": "rollup -cw"
+    "build": "rollup -cw",
+    "sim"  : "rollup -cw --environment DEST:sim"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^14.0.0",
