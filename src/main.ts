@@ -1,4 +1,6 @@
 import './spawn.prototype';
+import './modules/建筑缓存';
+import './creep.prototype';
 import {config} from "./begin.balance";
 import {source} from './init';
 import { ErrorMapper } from './modules/errorMapper';
@@ -31,8 +33,8 @@ function tower() {
             let tower=towers[tower_name];
             let DamagedStructure = tower.room.find(
                 FIND_STRUCTURES,
-                {filter: (structure) => (structure.hits < structure.hitsMax&&structure.hits<1000)
-                        ||(structure.structureType==STRUCTURE_CONTAINER&&structure.hits<100000)});
+                {filter: (structure) => (structure.hits < structure.hitsMax&&structure.hits<1500)
+                        ||(structure.structureType==STRUCTURE_CONTAINER&&structure.hits<200000)});
             if (DamagedStructure.length) {
                 DamagedStructure.sort((a,b)=>a.hits-b.hits);
                 tower.repair(DamagedStructure[0]);

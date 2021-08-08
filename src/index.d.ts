@@ -24,6 +24,13 @@ interface My_memory_structure {
     [key: string]: number,
 }
 */
+interface Creep{
+    goDie():boolean,
+    Source:Id<any>,
+}
 interface StructureSpawn{
     AvailableEnergy():void,
+}
+interface Room{
+    [key:string]:any,
 }

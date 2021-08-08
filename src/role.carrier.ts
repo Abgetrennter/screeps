@@ -42,6 +42,7 @@ function get_resource(creep: Creep): Resource {
     let targets = creep.room.find<FIND_DROPPED_RESOURCES>(FIND_DROPPED_RESOURCES);
     if (targets.length > 0) {
         targets.sort((a, b) => (b.amount - a.amount));
+        creep.say('I get the resource');
         return targets[0];
     } else {
         return null;
@@ -49,20 +50,18 @@ function get_resource(creep: Creep): Resource {
 }
 
 function get_SourceStructures(creep: Creep): AnyStoreStructure {
-    let sources = creep.pos.findClosestByPath<StructureContainer>(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return (structure.structureType === STRUCTURE_CONTAINER &&
-                structure.store[RESOURCE_ENERGY] > 0);
-        }
-    });
+    let sources = creep.room.container;
+    sources.sort((a,b)=>(-a.store[RESOURCE_ENERGY]+b.store[RESOURCE_ENERGY]));
 
     /*if (sources.length > 0) {
         // @ts-ignore
         sources.sort((a, b) => (b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]));
     */
-    if (sources) {
-        return sources;
+    if (sources[0].store[RESOURCE_ENERGY]>0) {
+        creep.say('container');
+        return sources[0];
     } else {
+        creep.say('hold on');
         return null;
     }
 }
@@ -97,27 +96,18 @@ function do_source(creep: Creep):void {
 }
 
 function get_target(creep: Creep) :AnyStoreStructure{
-    let target = creep.pos.findClosestByPath<AnyStoreStructure>(FIND_STRUCTURES, {
-        filter: (structure) => {
-            return ((structure.structureType === STRUCTURE_EXTENSION ||
-                    structure.structureType === STRUCTURE_SPAWN)
-                &&
-                structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
-        }
-    });
-    if (!target) {
+    let target = creep.room.tower.sort((a,b)=>(a.store[RESOURCE_ENERGY]-b.store(RESOURCE_ENERGY)))[0];
+    if (!target||target.store.getFreeCapacity(RESOURCE_ENERGY)===0) {
         target = creep.pos.findClosestByPath<AnyStoreStructure>(FIND_STRUCTURES, {
             filter: (structure) => {
-                return (structure.structureType === STRUCTURE_TOWER) &&
-                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+                return ((structure.structureType === STRUCTURE_EXTENSION ||
+                        structure.structureType === STRUCTURE_SPAWN)
+                    &&
+                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
             }
         });
         if (!target) {
-            target = creep.pos.findClosestByPath<AnyStoreStructure>(FIND_STRUCTURES, {
-                filter: (structure) => {
-                    return (structure.structureType === STRUCTURE_STORAGE&&structure.store.getFreeCapacity()>0);
-                }
-            });
+            target = creep.room.storage;
             if (!target){
                 return ;
             }
@@ -137,9 +127,9 @@ function do_carry(creep:Creep){
     if (flag === ERR_NOT_IN_RANGE) {
         creep.moveTo(target,
             {visualizePathStyle: {stroke: '#ffffff'}});
-    } else if (flag === OK) {
+    } else { //if (flag === OK)
         //creep.memory.target = null;
-        if (creep.store.getUsedCapacity()>0){
+        if (creep.store.getUsedCapacity(RESOURCE_ENERGY)===0){
             creep.memory.condition=state.Source;
         }
     }

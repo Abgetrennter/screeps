@@ -43,6 +43,7 @@ function get_source(creep:Creep){
     creep.memory.source=sources.id;
 }
 export const roleBuilder = function (creep: Creep) {
+    if (creep.goDie()) return;
     //creep.say(String(123));
     if (creep.memory.Working && creep.store[RESOURCE_ENERGY] === 0) {
         //creep.say(String(123));
@@ -69,7 +70,7 @@ export const roleBuilder = function (creep: Creep) {
     } else {
 
        let source=Game.getObjectById(creep.memory.source as Id<AnyStoreStructure>);
-       if (!source){
+       if (!source||Game.time%8===0){
            get_source(creep);
            source=Game.getObjectById(creep.memory.source as Id<AnyStoreStructure>);
            if (!source) return;

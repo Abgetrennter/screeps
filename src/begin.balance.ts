@@ -16,6 +16,7 @@ function radio_work_parts(room: Room, energy: number = 0): BodyPartConstant[] {
     } else {
         times = Math.floor(room.energyAvailable / 300);
     }
+    if (times>3)times=3;
     for (let i = 0; i < times; i++) {
         parts.push(WORK);
         parts.push(WORK);
@@ -60,8 +61,7 @@ function gc(): void {
     }
 }
 
-export const size_for_source = 4;
-
+export let size_for_source= 2;
 function new_harvester(parts:BodyPartConstant[]) :boolean{
 
     let count = _.size(Memory.source as List<unknown>) * size_for_source;
@@ -97,7 +97,7 @@ function new_carrier() :boolean{
     }).length;
     let worker =
         _.filter(Game.creeps, (creep) => creep.memory.role === 'carrier');
-    if (worker.length < count - 1) {
+    if (worker.length < count+1 ) {
         let newName = 'carrier' + Game.time % 100;
         let parts = radio_carry_parts(Game.spawns['Spawn1'].room);
 
@@ -108,9 +108,9 @@ function new_carrier() :boolean{
     return false;
 }
 
-function all_avalible_enegry(room:Room):number{
+function all_available_energy(room:Room):number{
     let ava=room.energyAvailable;
-
+    /*
     let con=room.find<StructureContainer>(FIND_STRUCTURES, {filter: (s)=>(s.structureType===STRUCTURE_CONTAINER)});
     for (let i in con) {
         ava+=con[i].store.getUsedCapacity(RESOURCE_ENERGY);
@@ -119,25 +119,32 @@ function all_avalible_enegry(room:Room):number{
     let str=room.find<StructureStorage>(FIND_STRUCTURES, {filter: (s)=>(s.structureType===STRUCTURE_STORAGE)});
     for (let i in str) {
         ava+=str[i].store.getUsedCapacity(RESOURCE_ENERGY);
+    }*/
+    let all=room.mass_stores
+    for (let i=0;i<all.length;i++){
+        //console.log(all[i]);
+        //@ts-ignore
+        ava+=all[i].store.getUsedCapacity(RESOURCE_ENERGY);
     }
-
     return ava;
 }
 
 export const config = function () {
-    if (Game.time % 17 != 0) {
+    if (Game.time % 57 != 0) {
         return;
     }
 
     //回收内存
     gc();
 
-    if (all_avalible_enegry(Game.spawns['Spawn1'].room)<200){
+    if (all_available_energy(Game.rooms['E22S59'])<350){
         roles['builder']['count']=0;
         roles['upgrader']['count']=0;
+        size_for_source=3;
     }else{
-        roles['builder']['count']=1;
-        roles['upgrader']['count']=1;
+        roles['builder']['count']=3;
+        roles['upgrader']['count']=2;
+        size_for_source=3-Game.rooms['E22S59'].container.length;
     }
 
 
