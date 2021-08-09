@@ -60,7 +60,7 @@ function gc(): void {
     }
 }
 
-export let size_for_source = 2;
+export let size_for_source = 1;
 
 function new_harvester(parts: BodyPartConstant[],room:Room): boolean {
 
@@ -130,7 +130,7 @@ function all_available_energy(room: Room): number {
 }
 
 export const config = function (room: Room) {
-    if (Game.time % 57 != 0) {
+    if (Game.time % 27 != 0) {
         return;
     }
 
@@ -142,8 +142,8 @@ export const config = function (room: Room) {
         roles['upgrader']['count'] = 0;
         size_for_source = 3;
     } else {
-        roles['builder']['count'] = 3;
-        roles['upgrader']['count'] = 2;
+        roles['builder']['count'] = 5;
+        roles['upgrader']['count'] = 4;
         size_for_source = 3 - room.container.length;
     }
 

@@ -9,6 +9,9 @@ import {roleCarrier} from './role.carrier';
 import {roleHarvester} from './role.harvester';
 import {roleRepairer} from './role.repairer';
 import {roleUpgrader} from './role.upgrader';
+import {roleDestroyer} from "./role.destroyer";
+import {roleRangecarry} from "@/role.rangecarry";
+import {roleAttacker} from "@/roleAttacker";
 
 source();
 
@@ -78,6 +81,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
         if (creep.memory.role === 'carrier') {
             // console.log('123');
             roleCarrier(creep);
+        }
+        if (creep.memory.role === 'destroyer'){
+            roleDestroyer(creep);
+        }
+        if (creep.memory.role=== 'rangecarry'){
+            roleRangecarry(creep);
+        }
+        if (creep.memory.role=== 'attacker'){
+            roleAttacker(creep);
         }
     }
 })
