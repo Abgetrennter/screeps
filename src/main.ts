@@ -1,9 +1,9 @@
-import './spawn.prototype';
+import './room.prototype';
 import './modules/建筑缓存';
 import './creep.prototype';
 import {config} from "./begin.balance";
 import {source} from './init';
-import { ErrorMapper } from './modules/errorMapper';
+import {ErrorMapper} from './modules/errorMapper';
 import {roleBuilder} from './role.builder';
 import {roleCarrier} from './role.carrier';
 import {roleHarvester} from './role.harvester';
@@ -11,6 +11,7 @@ import {roleRepairer} from './role.repairer';
 import {roleUpgrader} from './role.upgrader';
 
 source();
+
 /*
 function count_screeps() {
   Memory.c_screeps =
@@ -30,13 +31,15 @@ function tower() {
     });
     if (towers) {
         for (let tower_name in towers) {
-            let tower=towers[tower_name];
+            let tower = towers[tower_name];
             let DamagedStructure = tower.room.find(
                 FIND_STRUCTURES,
-                {filter: (structure) => (structure.hits < structure.hitsMax&&structure.hits<1500)
-                        ||(structure.structureType==STRUCTURE_CONTAINER&&structure.hits<200000)});
+                {
+                    filter: (structure) => (structure.hits < structure.hitsMax && structure.hits < 1500)
+                        || (structure.structureType == STRUCTURE_CONTAINER && structure.hits < 200000)
+                });
             if (DamagedStructure.length) {
-                DamagedStructure.sort((a,b)=>a.hits-b.hits);
+                DamagedStructure.sort((a, b) => a.hits - b.hits);
                 tower.repair(DamagedStructure[0]);
             }
 
@@ -47,10 +50,11 @@ function tower() {
         }
     }
 }
+
 export const loop = ErrorMapper.wrapLoop(() => {
     tower();
     for (let room in Game.rooms) {
-        config( Game.rooms[room]);
+        config(Game.rooms[room]);
     }
 
     // beginBalance.run();

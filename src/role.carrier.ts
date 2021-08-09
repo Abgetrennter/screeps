@@ -16,7 +16,7 @@ enum state {
 }
 
 
-function init(creep: Creep) :void{
+function init(creep: Creep): void {
     if (creep.ticksToLive < 20) {
         creep.memory.condition = state.Die;
     } else if (creep.store[RESOURCE_ENERGY] === 0) {
@@ -51,13 +51,13 @@ function get_resource(creep: Creep): Resource {
 
 function get_SourceStructures(creep: Creep): AnyStoreStructure {
     let sources = creep.room.container;
-    sources.sort((a,b)=>(-a.store[RESOURCE_ENERGY]+b.store[RESOURCE_ENERGY]));
+    sources.sort((a, b) => (-a.store[RESOURCE_ENERGY] + b.store[RESOURCE_ENERGY]));
 
     /*if (sources.length > 0) {
         // @ts-ignore
         sources.sort((a, b) => (b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]));
     */
-    if (sources[0].store[RESOURCE_ENERGY]>0) {
+    if (sources[0].store[RESOURCE_ENERGY] > 0) {
         creep.say('container');
         return sources[0];
     } else {
@@ -66,7 +66,7 @@ function get_SourceStructures(creep: Creep): AnyStoreStructure {
     }
 }
 
-function do_source(creep: Creep):void {
+function do_source(creep: Creep): void {
     let resource = get_resource(creep);
     if (!resource) {
         let source = get_SourceStructures(creep);
@@ -78,7 +78,7 @@ function do_source(creep: Creep):void {
             let flag = creep.withdraw(source, RESOURCE_ENERGY);
             //console.log(flag);
             if (flag === ERR_NOT_IN_RANGE) {
-                creep.room.visual.circle(source.pos,{fill: 'transparent', radius: 0.55, stroke: 'green'});
+                creep.room.visual.circle(source.pos, {fill: 'transparent', radius: 0.55, stroke: 'green'});
                 creep.moveTo(source, {visualizePathStyle: {stroke: '#ffffff'}});
                 return;
             }
@@ -88,18 +88,18 @@ function do_source(creep: Creep):void {
         let flag = creep.pickup(resource);
         //console.log(flag);
         if (flag === ERR_NOT_IN_RANGE) {
-            creep.room.visual.circle(resource.pos,{fill: 'transparent', radius: 0.55, stroke: 'yellow'});
+            creep.room.visual.circle(resource.pos, {fill: 'transparent', radius: 0.55, stroke: 'yellow'});
             creep.moveTo(resource, {visualizePathStyle: {stroke: '#ffffff'}});
             return;
         }
     }
 
-    if (creep.store.getFreeCapacity()===0) creep.memory.condition= state.Carry;
+    if (creep.store.getFreeCapacity() === 0) creep.memory.condition = state.Carry;
 }
 
-function get_target(creep: Creep) :AnyStoreStructure{
-    let target = creep.room.tower.sort((a,b)=>(a.store[RESOURCE_ENERGY]-b.store(RESOURCE_ENERGY)))[0];
-    if (!target||target.store.getFreeCapacity(RESOURCE_ENERGY)===0) {
+function get_target(creep: Creep): AnyStoreStructure {
+    let target = creep.room.tower.sort((a, b) => (a.store[RESOURCE_ENERGY] - b.store(RESOURCE_ENERGY)))[0];
+    if (!target || target.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
         target = creep.pos.findClosestByPath<AnyStoreStructure>(FIND_STRUCTURES, {
             filter: (structure) => {
                 return ((structure.structureType === STRUCTURE_EXTENSION ||
@@ -110,8 +110,8 @@ function get_target(creep: Creep) :AnyStoreStructure{
         });
         if (!target) {
             target = creep.room.storage;
-            if (!target){
-                return ;
+            if (!target) {
+                return;
             }
         }
 
@@ -120,8 +120,8 @@ function get_target(creep: Creep) :AnyStoreStructure{
     return target;
 }
 
-function do_carry(creep:Creep){
-    let target=get_target(creep);
+function do_carry(creep: Creep) {
+    let target = get_target(creep);
     if (!target) return;
 
     let flag: number;
@@ -131,8 +131,8 @@ function do_carry(creep:Creep){
             {visualizePathStyle: {stroke: '#ffffff'}});
     } else { //if (flag === OK)
         //creep.memory.target = null;
-        if (creep.store.getUsedCapacity(RESOURCE_ENERGY)===0){
-            creep.memory.condition=state.Source;
+        if (creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
+            creep.memory.condition = state.Source;
         }
     }
 }

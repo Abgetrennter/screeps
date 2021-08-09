@@ -1,40 +1,56 @@
 import {size_for_source} from "@/begin.balance";
 
 
-function get_target(creep) {
-    let target = creep.room.tower;
+function tower(creep:Creep):boolean {
+    let targets = creep.room.tower;
+    if (targets.length===0)return false;
+    //targets.sort((a, b) => a.store.getUsedCapacity(RESOURCE_ENERGY) - b.store.getUsedCapacity(RESOURCE_ENERGY));
+    if (targets[0].store.getUsedCapacity(RESOURCE_ENERGY)>500)return false;
+    creep.memory.target=targets[0].id;
+    return true;
+}
 
+function spAex(creep:Creep) :boolean{
+    let targets = creep.room.extension.concat(Game.spawns['Spawn1'].room.spawn).sort((a, b) => a.store.getUsedCapacity(RESOURCE_ENERGY) - b.store.getUsedCapacity(RESOURCE_ENERGY));
+    if (targets[0].getFreeCapacity(RESOURCE_ENERGY)===0){
+        return false;
+    }
+    else {
+        creep.memory.target=targets[0].id;
+        return true;
+    }
+}
+
+function container(creep:Creep):boolean{
+    let target = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+        filter: (structure) => {
+            return (structure.structureType === STRUCTURE_CONTAINER) &&
+                structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
+        }
+    });
+    if (!target) return false;
+    creep.memory.target=target.id;
+    return true;
+}
+
+function get_target(creep) {
+    let flag1=tower(creep);
+    let flag2;
+    let flag3;
     let count = _.filter(Game.creeps, (creep) => creep.memory.role === 'carrier').length;
     //if (target === null&&count==0) {
-    if ((target.length===0||target[0].store[RESOURCE_ENERGY]>500)&&count===0) {
-        /*(target = creep.room.find(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return ((structure.structureType === STRUCTURE_EXTENSION ||
-                        structure.structureType === STRUCTURE_SPAWN) &&
-                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0);
-            }
-        });
-
-        if (!target) {
-            target = [creep.room.spawn];
-        })*/
-        target=Game.spawns['Spawn1'].room.extension.
-        concat(Game.spawns['Spawn1'].room.spawn).
-        sort((a, b) => a.store.getUsedCapacity(RESOURCE_ENERGY) - b.store.getUsedCapacity(RESOURCE_ENERGY));
-        //console.log(target);
-    }else if (target[0].store[RESOURCE_ENERGY]>500){
-        target=creep.pos.findClosestByPath(FIND_STRUCTURES, {
-            filter: (structure) => {
-                return (structure.structureType === STRUCTURE_CONTAINER) &&
-                    structure.store.getFreeCapacity(RESOURCE_ENERGY) >0;
-            }
-        });
-        target=[target];
+    if (flag1 && count === 0) {
+        flag2=spAex(creep);
+    } else{
+        flag3=container(creep);
     }
-    if (!target){
-        target[0]=creep.room.storage;
+    if (!(flag1||flag2||flag3) ){
+        //console.log(creep.room.storage)
+        if (creep.room.storage.length){
+            creep.memory.target = creep.room.storage.id;
+        }
     }
-    creep.memory.target = target[0].id;
+    return;
 }
 
 function init_source(creep) {
@@ -69,11 +85,11 @@ export const roleHarvester = function (creep: Creep) {
     **/
     if (creep.goDie()) return;
     if (creep.store.getFreeCapacity() > 0) {
-
+        //init_source(creep);
         const source = Game.getObjectById(creep.memory.source as Id<Source>);
         if (creep.harvest(source) ===
             ERR_NOT_IN_RANGE) {
-            creep.room.visual.circle(source.pos,{fill: 'transparent', radius: 0.55, stroke: 'blue'});
+            creep.room.visual.circle(source.pos, {fill: 'transparent', radius: 0.55, stroke: 'blue'});
             creep.moveTo(source,
                 {visualizePathStyle: {stroke: '#ffaa00'}});
             /*if (flag===ERR_NO_PATH){
@@ -99,9 +115,9 @@ export const roleHarvester = function (creep: Creep) {
             creep.repair(target);
             return;
         }*/
-        let flag = creep.transfer(target, RESOURCE_ENERGY)
+        let flag = creep.transfer(target, RESOURCE_ENERGY);
         if (flag === ERR_NOT_IN_RANGE) {
-            creep.room.visual.circle(target.pos,{fill: 'transparent', radius: 0.55, stroke: 'red'});
+            creep.room.visual.circle(target.pos, {fill: 'transparent', radius: 0.55, stroke: 'red'});
             creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
         } else if (flag === OK) {
 

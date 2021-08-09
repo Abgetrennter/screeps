@@ -3,32 +3,33 @@ function get_targets(creep: Creep) {
     if (targets.length) {
         //@ts-ignore
         targets.sort((a, b) => (a.process - b.process));
-        creep.memory.target=targets[0].id;
+        creep.memory.target = targets[0].id;
     } else {
-        creep.memory.target=null;
+        creep.memory.target = null;
     }
 
 }
-function build(creep:Creep){
-    let target=Game.getObjectById(creep.memory.target as Id<ConstructionSite>);
-    if (!target){
+
+function build(creep: Creep) {
+    let target = Game.getObjectById(creep.memory.target as Id<ConstructionSite>);
+    if (!target) {
         //get_targets(creep);
         return;
     }
-    let flag=creep.build(target);
+    let flag = creep.build(target);
     if (flag === ERR_NOT_IN_RANGE) {
         creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
     }
     //creep.say(flag);
 }
 
-function upgrader(creep:Creep){
+function upgrader(creep: Creep) {
     if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
         creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#ffffff'}});
     }
 }
 
-function get_source(creep:Creep){
+function get_source(creep: Creep) {
     let sources = creep.pos.findClosestByPath<AnyStoreStructure>(FIND_STRUCTURES, {
         filter: (structure) => {
             return ((structure.structureType === STRUCTURE_CONTAINER ||
@@ -36,12 +37,13 @@ function get_source(creep:Creep){
                 structure.store[RESOURCE_ENERGY] > 50);
         }
     });
-    if (!sources){
-        creep.memory.source=null;
+    if (!sources) {
+        creep.memory.source = null;
         return;
     }
-    creep.memory.source=sources.id;
+    creep.memory.source = sources.id;
 }
+
 export const roleBuilder = function (creep: Creep) {
     if (creep.goDie()) return;
     //creep.say(String(123));
@@ -49,32 +51,31 @@ export const roleBuilder = function (creep: Creep) {
         //creep.say(String(123));
         creep.memory.Working = false;
         get_source(creep);
-    }
-    else if (!creep.memory.Working && creep.store.getFreeCapacity() === 0) {
+    } else if (!creep.memory.Working && creep.store.getFreeCapacity() === 0) {
         //creep.say(String(124));
         creep.memory.Working = true;
         get_targets(creep);
     }
 
     if (creep.memory.Working) {
-        if (Game.time%5===0) {
+        if (Game.time % 5 === 0) {
             get_targets(creep);
         }
-        if (!!creep.memory.target){
+        if (!!creep.memory.target) {
             //creep.say(String(123));
             build(creep);
-        }else{
+        } else {
             //creep.say(String(1234));
             upgrader(creep);
         }
     } else {
 
-       let source=Game.getObjectById(creep.memory.source as Id<AnyStoreStructure>);
-       if (!source||Game.time%8===0){
-           get_source(creep);
-           source=Game.getObjectById(creep.memory.source as Id<AnyStoreStructure>);
-           if (!source) return;
-       }
+        let source = Game.getObjectById(creep.memory.source as Id<AnyStoreStructure>);
+        if (!source || Game.time % 8 === 0) {
+            get_source(creep);
+            source = Game.getObjectById(creep.memory.source as Id<AnyStoreStructure>);
+            if (!source) return;
+        }
         //sources.sort((a, b) => (-a.store[RESOURCE_ENERGY] + b.store[RESOURCE_ENERGY]))
         if (creep.withdraw(source, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
             creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});

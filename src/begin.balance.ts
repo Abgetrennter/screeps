@@ -1,4 +1,3 @@
-import {List} from "lodash";
 
 let roles = {
     'harvester': {count: 6, body: [WORK, CARRY, MOVE, MOVE]},
@@ -16,7 +15,7 @@ function radio_work_parts(room: Room, energy: number = 0): BodyPartConstant[] {
     } else {
         times = Math.floor(room.energyAvailable / 300);
     }
-    if (times>3)times=3;
+    if (times > 3) times = 3;
     for (let i = 0; i < times; i++) {
         parts.push(WORK);
         parts.push(WORK);
@@ -61,10 +60,11 @@ function gc(): void {
     }
 }
 
-export let size_for_source= 2;
-function new_harvester(parts:BodyPartConstant[]) :boolean{
+export let size_for_source = 2;
 
-    let count = _.size(Memory.source as List<unknown>) * size_for_source;
+function new_harvester(parts: BodyPartConstant[],room:Room): boolean {
+
+    let count = room.source.length * size_for_source;
     let worker =
         _.filter(Game.creeps, (creep) => creep.memory.role === 'harvester');
     if (worker.length < count) {
@@ -88,7 +88,7 @@ function new_harvester(parts:BodyPartConstant[]) :boolean{
     return false;
 }
 
-function new_carrier() :boolean{
+function new_carrier(): boolean {
     let count = Game.spawns['Spawn1'].room.find(FIND_STRUCTURES, {
         filter:
             (structure) => {
@@ -97,7 +97,7 @@ function new_carrier() :boolean{
     }).length;
     let worker =
         _.filter(Game.creeps, (creep) => creep.memory.role === 'carrier');
-    if (worker.length < count+1 ) {
+    if (worker.length < count + 1) {
         let newName = 'carrier' + Game.time % 100;
         let parts = radio_carry_parts(Game.spawns['Spawn1'].room);
 
@@ -108,8 +108,8 @@ function new_carrier() :boolean{
     return false;
 }
 
-function all_available_energy(room:Room):number{
-    let ava=room.energyAvailable;
+function all_available_energy(room: Room): number {
+    let ava = room.energyAvailable;
     /*
     let con=room.find<StructureContainer>(FIND_STRUCTURES, {filter: (s)=>(s.structureType===STRUCTURE_CONTAINER)});
     for (let i in con) {
@@ -120,16 +120,16 @@ function all_available_energy(room:Room):number{
     for (let i in str) {
         ava+=str[i].store.getUsedCapacity(RESOURCE_ENERGY);
     }*/
-    let all=room.mass_stores
-    for (let i=0;i<all.length;i++){
+    let all = room.mass_stores
+    for (let i = 0; i < all.length; i++) {
         //console.log(all[i]);
         //@ts-ignore
-        ava+=all[i].store.getUsedCapacity(RESOURCE_ENERGY);
+        ava += all[i].store.getUsedCapacity(RESOURCE_ENERGY);
     }
     return ava;
 }
 
-export const config = function (room:Room) {
+export const config = function (room: Room) {
     if (Game.time % 57 != 0) {
         return;
     }
@@ -137,18 +137,18 @@ export const config = function (room:Room) {
     //回收内存
     gc();
 
-    if (all_available_energy(Game.spawns['Spawn1'].room)<350){
-        roles['builder']['count']=0;
-        roles['upgrader']['count']=0;
-        size_for_source=3;
-    }else{
-        roles['builder']['count']=3;
-        roles['upgrader']['count']=2;
-        size_for_source=3-Game.spawns['Spawn1'].room.container.length;
+    if (all_available_energy(room) < 350) {
+        roles['builder']['count'] = 0;
+        roles['upgrader']['count'] = 0;
+        size_for_source = 3;
+    } else {
+        roles['builder']['count'] = 3;
+        roles['upgrader']['count'] = 2;
+        size_for_source = 3 - room.container.length;
     }
 
 
-    let parts = radio_work_parts(Game.spawns['Spawn1'].room);
+    let parts = radio_work_parts(room);
     if (!parts) {
         return;
     }
@@ -157,9 +157,9 @@ export const config = function (room:Room) {
      * 这种想法.但是之后可能还要引入队列的想法,对生成的数目进行排序
      */
 
-    if (new_harvester(parts))return;
+    if (new_harvester(parts,room)) return;
 
-    if(new_carrier())return;
+    if (new_carrier()) return;
 
     {
         let worker =

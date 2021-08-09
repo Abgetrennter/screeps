@@ -10,7 +10,7 @@ export const source = function () {
         _.filter(Game.creeps, (creep) => creep.memory.role === 'harvester');
     for (let i in workers) {
         let creep = workers[i];
-        if (!creep.memory.source) {
+        if (!creep.memory.source ||! (creep.memory.source in Memory.source)) {
             continue;
         }
         Memory.source[creep.memory.source] += 1;
