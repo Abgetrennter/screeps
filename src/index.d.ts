@@ -9,16 +9,13 @@ interface CreepMemory {
     condition?: number,
 }
 
-interface RoomMemory {
-    ava: number,
-}
-
 interface Memory {
     /**
      * 储存的东西
      */
     container?: object,
     source: object,
+    error_times:number,
 }
 
 /*
@@ -26,20 +23,6 @@ interface My_memory_structure {
     [key: string]: number,
 }
 */
-interface Creep {
-    Source: Id<any>,
 
-    goDie(): boolean,
-}
 
-interface StructureSpawn {
-    AvailableEnergy(): void,
-}
 
-interface Room {
-    [key: string]: any,
-}
-
-interface RoomMemory{
-    roles:object,
-}

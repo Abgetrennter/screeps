@@ -1,19 +1,19 @@
-import './room.prototype';
-import './modules/建筑缓存';
-import './creep.prototype';
-import {config} from "./begin.balance";
-import {source} from './init';
-import {ErrorMapper} from './modules/errorMapper';
-import {roleBuilder} from './role.builder';
-import {roleCarrier} from './role.carrier';
-import {roleHarvester} from './role.harvester';
-import {roleRepairer} from './role.repairer';
-import {roleUpgrader} from './role.upgrader';
-import {roleDestroyer} from "./role.destroyer";
-import {roleRangecarry} from "@/role.rangecarry";
-import {roleAttacker} from "@/roleAttacker";
+import '@/prototype/room';
+import '@/modules/建筑缓存';
+import '@/prototype/creep';
+import {config} from "@/begin.balance";
+//import {source} from '@/init';
+import {ErrorMapper} from '@/modules/errorMapper';
+import {builder} from '@/role/builder';
+import {carrier} from '@/role/carrier';
+import {harvester} from '@/role/harvester';
+import {repairer} from '@/role/repairer';
+import {upgrader} from '@/role/upgrader';
+import {claimer} from "@/role/claimer";
+import {tester} from "@/role/tester";
+import {remotebuilder} from "@/role/remotebuilder";
 
-source();
+//source();
 
 /*
 function count_screeps() {
@@ -25,20 +25,20 @@ function count_screeps() {
   }
 }
 */
-function tower() {
-    let towers = Game.spawns['Spawn1'].room.find<StructureTower>(FIND_STRUCTURES, {
-        filter:
-            (structure) => {
-                return (structure.structureType === STRUCTURE_TOWER);
-            }
-    });
-    if (towers) {
+for (let room in Game.rooms) {
+    Game.rooms[room].source_count;
+}
+
+
+function tower(room: Room) {
+    let towers = room.tower;
+    if (towers.length > 0) {
         for (let tower_name in towers) {
             let tower = towers[tower_name];
             let DamagedStructure = tower.room.find(
                 FIND_STRUCTURES,
                 {
-                    filter: (structure) => (structure.hits < structure.hitsMax && structure.hits < 1500)
+                    filter: (structure) => (structure.hits < structure.hitsMax && structure.hits < 2500)
                         || (structure.structureType == STRUCTURE_CONTAINER && structure.hits < 200000)
                 });
             if (DamagedStructure.length) {
@@ -53,11 +53,12 @@ function tower() {
         }
     }
 }
-
+//
 export const loop = ErrorMapper.wrapLoop(() => {
-    tower();
+
     for (let room in Game.rooms) {
         config(Game.rooms[room]);
+        tower(Game.rooms[room]);
     }
 
     // beginBalance.run();
@@ -65,31 +66,41 @@ export const loop = ErrorMapper.wrapLoop(() => {
     // get_source()
     for (let name in Game.creeps) {
         let creep = Game.creeps[name];
-        if (creep.memory.role === 'harvester') {
-            // console.log(1);
-            roleHarvester(creep);
-        }
-        if (creep.memory.role === 'upgrader') {
-            roleUpgrader(creep);
-        }
-        if (creep.memory.role === 'builder') {
-            roleBuilder(creep);
-        }
-        if (creep.memory.role === 'repairer') {
-            roleRepairer(creep);
-        }
-        if (creep.memory.role === 'carrier') {
-            // console.log('123');
-            roleCarrier(creep);
-        }
-        if (creep.memory.role === 'destroyer'){
-            roleDestroyer(creep);
-        }
-        if (creep.memory.role=== 'rangecarry'){
-            roleRangecarry(creep);
-        }
-        if (creep.memory.role=== 'attacker'){
-            roleAttacker(creep);
+        creep.say('DA☆ZE')
+        switch (creep.memory.role) {
+            case 'harvester': {
+                harvester(creep);
+                break;
+            }
+            case 'upgrader': {
+                upgrader(creep);
+                break;
+            }
+            case 'builder': {
+                builder(creep);
+                break;
+            }
+            case 'repairer': {
+                repairer(creep);
+                break;
+            }
+            case 'carrier': {
+                carrier(creep);
+                break;
+            }
+            case 'tester': {
+                tester(creep);
+                break;
+            }
+
+            case 'claimer': {
+                claimer(creep);
+                break;
+            }
+
+            case 'remotebuilder':{
+                remotebuilder(creep);
+            }
         }
     }
 })

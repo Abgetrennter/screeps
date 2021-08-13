@@ -30,11 +30,13 @@ function upgrader(creep: Creep) {
 }
 
 function get_source(creep: Creep) {
-    let sources = creep.pos.findClosestByPath<AnyStoreStructure>(FIND_STRUCTURES, {
+    let num=creep.store.getFreeCapacity();
+    let sources = creep.pos.findClosestByRange<AnyStoreStructure>(FIND_STRUCTURES, {
         filter: (structure) => {
             return ((structure.structureType === STRUCTURE_CONTAINER ||
-                    structure.structureType === STRUCTURE_SPAWN) &&
-                structure.store[RESOURCE_ENERGY] > 50);
+                    structure.structureType === STRUCTURE_SPAWN||
+                    structure.structureType===STRUCTURE_STORAGE) &&
+                structure.store[RESOURCE_ENERGY] > num );
         }
     });
     if (!sources) {
@@ -44,7 +46,7 @@ function get_source(creep: Creep) {
     creep.memory.source = sources.id;
 }
 
-export const roleBuilder = function (creep: Creep) {
+export const builder = function (creep: Creep) {
     if (creep.goDie()) return;
     //creep.say(String(123));
     if (creep.memory.Working && creep.store[RESOURCE_ENERGY] === 0) {

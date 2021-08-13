@@ -1,7 +1,11 @@
-export const source = function () {
-    let targets = Game.spawns['Spawn1'].room.find(FIND_SOURCES);
+/*export const source = function () {
+    let targets = [];
+    for (let name in Game.rooms) {
+        //console.log(Game.rooms[name].source);
+        targets=targets.concat(Game.rooms[name].source);
+    }
     Memory.source = {};
-    // console.log(Memory.source)
+    //console.log(targets);
     for (let i in targets) {
         Memory.source[targets[i].id] = 0;
     }
@@ -16,4 +20,4 @@ export const source = function () {
         Memory.source[creep.memory.source] += 1;
     }
 
-}
+}*/

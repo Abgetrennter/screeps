@@ -1,4 +1,4 @@
-export const roleRangecarry = function (creep: Creep) {
+export const rangecarrier = function (creep: Creep) {
     if (creep.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
         let target = Game.spawns['Spawn1'].room.storage;
         console.log(target);

@@ -85,7 +85,15 @@ export class ErrorMapper {
                         `沙盒模式无法使用 source-map - 显示原始追踪栈<br>${_.escape(e.stack)}` :
                         `${_.escape(this.sourceMappedStackTrace(e))}`
 
-                    console.log(errorMessage)
+                    console.log(errorMessage);
+                    if (!Memory.error_times){
+                        Memory.error_times=0;
+                    }else{
+                        Memory.error_times+=1;
+                    }
+                    if (Memory.error_times>5){
+                        Game.notify(errorMessage);
+                    }
                     //throw e;
                 }
                 // 处理不了，直接抛出

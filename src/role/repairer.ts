@@ -1,4 +1,4 @@
-export const roleRepairer = function (creep) {
+export const repairer = function (creep) {
     if (creep.memory.Working && creep.store[RESOURCE_ENERGY] === 0) {
         creep.memory.Working = false;
     }

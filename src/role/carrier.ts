@@ -114,9 +114,9 @@ function do_pick(creep: Creep) {
 }
 
 function get_target(creep: Creep): AnyStoreStructure {
-    let target = creep.room.tower.sort((a, b) => (a.store[RESOURCE_ENERGY] - b.store(RESOURCE_ENERGY)))[0];
-    if (!target || target.store.getFreeCapacity(RESOURCE_ENERGY) < 200) {
-        target = creep.pos.findClosestByPath<AnyStoreStructure>(FIND_STRUCTURES, {
+    let target = creep.room.tower.sort((a, b) => (a.store[RESOURCE_ENERGY] - b.store[RESOURCE_ENERGY]))[0];
+    if (!target || target.store.getUsedCapacity(RESOURCE_ENERGY) >50) {
+        target = creep.pos.findClosestByRange<AnyStoreStructure>(FIND_STRUCTURES, {
             filter: (structure) => {
                 return ((structure.structureType === STRUCTURE_EXTENSION ||
                         structure.structureType === STRUCTURE_SPAWN)
@@ -153,7 +153,7 @@ function do_carry(creep: Creep) {
 }
 
 
-export const roleCarrier = function (creep: Creep) {
+export const carrier = function (creep: Creep) {
     switch (creep.memory.condition) {
         case state.Source: {
             get_source(creep);

@@ -1,4 +1,4 @@
-export const roleAttacker=function (creep:Creep) {
+export const attacker=function (creep:Creep) {
     let target=Game.getObjectById(creep.memory.target as Id<AnyStructure>);
     if (creep.attack(target) === ERR_NOT_IN_RANGE){
         creep.moveTo(target);
