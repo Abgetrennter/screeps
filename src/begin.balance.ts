@@ -1,19 +1,18 @@
+function simple_new(role, room, count) {
+    let worker =
+        _.filter(Game.creeps, (creep) => creep.memory.role === role);
+    if (worker.length < count) {
+        let newName = role + Game.time % 100;
 
-function simple_new(role,room,count) {
-        let worker =
-            _.filter(Game.creeps, (creep) => creep.memory.role === role);
-        if (worker.length < count) {
-            let newName = role + Game.time % 100;
-
-            room.spawn[0].spawnCreep([WORK,CARRY,MOVE, MOVE], newName,
-                {memory: {role: role}});
-            return true;
-        }
-        return false;
+        room.spawn[0].spawnCreep([WORK,WORK,CARRY, CARRY,MOVE,MOVE, MOVE, MOVE], newName,
+            {memory: {role: role}});
+        return true;
+    }
+    return false;
 }
 
 
-function radio_work_parts(room: Room, n:number): BodyPartConstant[] {
+function radio_work_parts(room: Room, n: number): BodyPartConstant[] {
     let times: number;
     let parts: BodyPartConstant[] = [];
 
@@ -60,37 +59,29 @@ function gc(): void {
 }
 
 
-function new_harvester(parts: BodyPartConstant[],room:Room): boolean {
+function new_harvester(parts: BodyPartConstant[], room: Room): boolean {
 
     let count = room.source.length * room.size_for_source;
-    let worker =room.role_count('harvester');
+    let worker = room.role_count('harvester');
     if (worker < count) {
         let newName = 'harvester' + Game.time % 100;
-        let target:string=room.source[0].id;
-        for (let i in room.source_count) {
-            if (room.source_count[i] < room.size_for_source) {
-                target = i;
-                break;
-            }
-        }
         let flag = room.spawn[0].spawnCreep(parts, newName,
-            {memory: {role: 'harvester', source: target,condition:0}});
+            {memory: {role: 'harvester', condition: 6}});
         if (flag === OK) {
-            room.source_count[target] += 1;
             return true;
         }
     }
     return false;
 }
 
-function new_carrier(room:Room): boolean {
+function new_carrier(room: Room): boolean {
     let count = room.find<StructureContainer>(FIND_STRUCTURES, {
         filter:
             (structure) => {
                 return (structure.structureType === STRUCTURE_CONTAINER);
             }
     }).length;
-    let worker =room.role_count('carrier');
+    let worker = room.role_count('carrier');
     if (worker < count + 1) {
         let newName = 'carrier' + Game.time % 100;
         let parts = radio_carry_parts(room);
@@ -102,18 +93,18 @@ function new_carrier(room:Room): boolean {
     return false;
 }
 
-function new_builder(room: Room, parts: BodyPartConstant[]):boolean {
-        let worker = room.role_count('builder');
-        if (worker < 2) {
-            let newName = 'builder' + Game.time % 100;
-            room.spawn[0].spawnCreep(parts, newName,
-                {memory: {role: 'builder', Working: true}});
-            return true;
-        }
-        return false;
+function new_builder(room: Room, parts: BodyPartConstant[]): boolean {
+    let worker = room.role_count('builder');
+    if (worker < 2) {
+        let newName = 'builder' + Game.time % 100;
+        room.spawn[0].spawnCreep(parts, newName,
+            {memory: {role: 'builder', Working: true}});
+        return true;
+    }
+    return false;
 }
 
-function new_upgrader(room: Room, parts: BodyPartConstant[]):boolean{
+function new_upgrader(room: Room, parts: BodyPartConstant[]): boolean {
     let worker = room.role_count('upgrader');
     if (worker < 2) {
         let newName = 'upgrader' + Game.time % 100;
@@ -136,7 +127,7 @@ function new_repairer(room: Room) {
 }
 
 export const config = function (room: Room) {
-    if (room.spawn.length===0){
+    if (room.spawn.length === 0) {
         return;
     }
     if (Game.time % 8 != 0) {
@@ -145,35 +136,35 @@ export const config = function (room: Room) {
 
     //回收内存
     gc();
-    let flag=false;
+    let flag = false;
     // @ts-ignore
-    let count=_.sum(Game.creeps, (creep) => ( creep.room.name === room.name));
-    if (room.energyAvailable < 300&&count<5) {
+    let count = _.sum(Game.creeps, (creep) => (creep.room.name === room.name));
+    if (room.energyAvailable < 300 && count < 5) {
         room.size_for_source = 1;
-        flag=true;
+        flag = true;
     } else {
         room.size_for_source = 3 - room.container.length;
     }
 
 
-    let parts = radio_work_parts(room,3);
+    let parts = radio_work_parts(room, 3);
     /* 考虑这样一种情况,如果是发展期,我们需要增加其数量.那么补全
      * 缺失的东西这种想法就不是很好用,所以需要和预定的数目比较
      * 这种想法.但是之后可能还要引入队列的想法,对生成的数目进行排序
      */
-    if (new_harvester(radio_work_parts(room,3),room)) return;
+    if (new_harvester(radio_work_parts(room, 3), room)) return;
 
 
     if (new_carrier(room)) return;
 
-    if(new_builder(room, parts)) return;
+    if (new_builder(room, parts)) return;
 
-    if(new_upgrader(room, parts))return;
+    if (new_upgrader(room, parts)) return;
 
-    if(new_repairer(room))return;
-    if (room.controller.level>3&&!flag){
+    if (new_repairer(room)) return;
+    if (room.controller.level > 3 && !flag) {
         if (simple_new('tester', room, 1)) return;
-        if (simple_new('remotebuilder', room, 1)) return;
+        if (simple_new('remotebuilder', room, 3)) return;
     }
 
 }

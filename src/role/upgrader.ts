@@ -26,6 +26,9 @@ export const upgrader = function (creep: Creep) {
     }
 
     if (creep.memory.Working) {
+            /*if(creep.signController(creep.room.controller, "") == ERR_NOT_IN_RANGE) {
+                creep.moveTo(creep.room.controller);
+            }*/
         if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
             creep.moveTo(creep.room.controller,
                 {visualizePathStyle: {stroke: '#ffffff'}});

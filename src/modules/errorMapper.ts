@@ -86,13 +86,10 @@ export class ErrorMapper {
                         `${_.escape(this.sourceMappedStackTrace(e))}`
 
                     console.log(errorMessage);
-                    if (!Memory.error_times){
-                        Memory.error_times=0;
-                    }else{
                         Memory.error_times+=1;
-                    }
                     if (Memory.error_times>5){
                         Game.notify(errorMessage);
+                        Memory.error_times=0;
                     }
                     //throw e;
                 }

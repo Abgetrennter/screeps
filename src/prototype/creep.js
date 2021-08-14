@@ -4,13 +4,16 @@ Creep.prototype.goDie = function () {
         return true;
     } else if (this.ticksToLive === 10) {
         this.drop(RESOURCE_ENERGY);
-        if (this.memory.role === 'harvester') {
-            this.room.source_count[this.memory.source] -= 1;
-            if (this.room.source_count[this.memory.source] < 0) Memory.source[this.memory.source] = 0;
-        }
+
     } else if (this.ticksToLive < 10) {
         this.say("A~W~S~L");
         return true;
+    } else if (this.ticksToLive === 1) {
+        if (this.memory.role === 'harvester') {
+            this.room.source_count[this.memory.source] -= 1;
+            if (this.room.source_count[this.memory.source] < 0) this.room.source_count[this.memory.source] = 0;
+        }
+        delete Memory.creeps[this.name];
     } else {
         return false;
     }

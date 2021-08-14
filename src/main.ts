@@ -39,7 +39,6 @@ function tower(room: Room) {
                 FIND_STRUCTURES,
                 {
                     filter: (structure) => (structure.hits < structure.hitsMax && structure.hits < 2500)
-                        || (structure.structureType == STRUCTURE_CONTAINER && structure.hits < 200000)
                 });
             if (DamagedStructure.length) {
                 DamagedStructure.sort((a, b) => a.hits - b.hits);
@@ -66,7 +65,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
     // get_source()
     for (let name in Game.creeps) {
         let creep = Game.creeps[name];
-        creep.say('DA☆ZE')
+        //creep.say('DA☆ZE');
         switch (creep.memory.role) {
             case 'harvester': {
                 harvester(creep);

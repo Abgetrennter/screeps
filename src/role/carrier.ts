@@ -65,6 +65,9 @@ function get_SourceStructures(creep: Creep): AnyStoreStructure {
         creep.say('container');
         return sources;
     } else {
+        /*if (Game.rooms.E22S59.storage.store[RESOURCE_ENERGY]>0){
+            return Game.rooms.E22S59.storage;
+        }*/
         creep.say('hold on');
         return null;
     }
@@ -115,7 +118,7 @@ function do_pick(creep: Creep) {
 
 function get_target(creep: Creep): AnyStoreStructure {
     let target = creep.room.tower.sort((a, b) => (a.store[RESOURCE_ENERGY] - b.store[RESOURCE_ENERGY]))[0];
-    if (!target || target.store.getUsedCapacity(RESOURCE_ENERGY) >50) {
+    if (!target || target.store.getUsedCapacity(RESOURCE_ENERGY) >800) {
         target = creep.pos.findClosestByRange<AnyStoreStructure>(FIND_STRUCTURES, {
             filter: (structure) => {
                 return ((structure.structureType === STRUCTURE_EXTENSION ||
@@ -126,9 +129,9 @@ function get_target(creep: Creep): AnyStoreStructure {
         });
         if (!target) {
             target = creep.room.storage;
-            if (!target) {
-                return;
-            }
+            /*if (!target) {
+                target=Game.rooms.E22S59.storage;
+            }*/
         }
 
     }

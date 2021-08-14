@@ -6,23 +6,26 @@ Room.prototype.role_count = function (role) {
 Object.defineProperty(Room.prototype, 'source_count', {
     get: function () {
         if (!this._sc) {
+            let sc = {};
+            for (let name in this.source) {
+                sc[this.source[name].id] = 0;
+            }
+            let workers = _.filter(Game.creeps, (creep) =>
+                (creep.memory.role === 'harvester' && creep.room.name === this.name));
+            for (let i in workers) {
+                let creep = workers[i];
+                if (!creep.memory.source || !(creep.memory.source in sc)) {
+                    continue;
+                }
+                sc[creep.memory.source] += 1;
+            }
             if (!this.memory.sc) {
-                let sc = {};
-                for (let name in this.source) {
-                    sc[this.source[name].id] = 0;
-                }
-                let workers = _.filter(Game.creeps, (creep) =>
-                    (creep.memory.role === 'harvester' && creep.room.name === this.name));
-                for (let i in workers) {
-                    let creep = workers[i];
-                    if (!creep.memory.source ||! (creep.memory.source in sc)) {
-                        continue;
-                    }
-                    sc[creep.memory.source] += 1;
-                }
+                this.memory.sc = sc;
+            } else {
+                delete this.memory.sc;
                 this.memory.sc = sc;
             }
-            this._sc = this.memory.sc;
+            this._sc = sc;
         }
         return this._sc;
     },
@@ -34,15 +37,15 @@ Object.defineProperty(Room.prototype, 'size_for_source', {
     get: function () {
         if (!this._ss) {
             if (!this.memory.ss) {
-                this.memory.ss=1;
+                this.memory.ss = 1;
             }
             this._ss = this.memory.ss;
         }
         return this._ss;
     },
-    set:function (value) {
-      this._ss=value;
-      this.memory.ss=value;
+    set: function (value) {
+        this._ss = value;
+        this.memory.ss = value;
     },
     enumerable: false,
     configurable: true,

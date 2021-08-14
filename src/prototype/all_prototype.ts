@@ -14,6 +14,9 @@ interface StructureSpawn {
 
 interface Room {
     role_count(key:string):number,
+    source:Source[],
+    container:StructureContainer[],
+    mass_stores:AnyStoreStructure[],
     source_count:object,
     [key: string]: any,
 }
