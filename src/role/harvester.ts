@@ -57,7 +57,12 @@ function get_target(creep) {
     if (!flag1) {
         let flag2 = spAex(creep);
         if (!flag2) {
-
+            let i=creep.pos.findClosestByRange(FIND_STRUCTURES,{filter:(s)=>(s.structureType==STRUCTURE_LINK)});
+            if (!i){
+                return;
+            }else{
+                creep.memory.target=i.id;
+            }
         }
 
     }
@@ -81,9 +86,7 @@ function get_target(creep) {
 }
 
 function do_carry(creep: Creep) {
-    if (!creep.memory.target || Game.time % 10 == 0) {
         get_target(creep);
-    }
     let target = Game.getObjectById(creep.memory.target as Id<AnyStoreStructure>);
     let flag = creep.transfer(target, RESOURCE_ENERGY);
     if (flag === ERR_NOT_IN_RANGE) {

@@ -1,6 +1,7 @@
 import '@/prototype/room';
 import '@/modules/建筑缓存';
 import '@/prototype/creep';
+
 import {config} from "@/begin.balance";
 //import {source} from '@/init';
 import {ErrorMapper} from '@/modules/errorMapper';
@@ -35,6 +36,11 @@ function tower(room: Room) {
     if (towers.length > 0) {
         for (let tower_name in towers) {
             let tower = towers[tower_name];
+            let closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+            if (closestHostile) {
+                tower.attack(closestHostile);
+                continue;
+            }
             let DamagedStructure = tower.room.find(
                 FIND_STRUCTURES,
                 {
@@ -45,10 +51,7 @@ function tower(room: Room) {
                 tower.repair(DamagedStructure[0]);
             }
 
-            let closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-            if (closestHostile) {
-                tower.attack(closestHostile);
-            }
+
         }
     }
 }

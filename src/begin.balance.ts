@@ -106,7 +106,11 @@ function new_builder(room: Room, parts: BodyPartConstant[]): boolean {
 
 function new_upgrader(room: Room, parts: BodyPartConstant[]): boolean {
     let worker = room.role_count('upgrader');
-    if (worker < 2) {
+    let count = 2;
+    if (room.controller.level<4){
+        count=4;
+    }
+    if (worker < count) {
         let newName = 'upgrader' + Game.time % 100;
         room.spawn[0].spawnCreep(parts, newName,
             {memory: {role: 'upgrader', Working: true}});
@@ -130,7 +134,7 @@ export const config = function (room: Room) {
     if (room.spawn.length === 0) {
         return;
     }
-    if (Game.time % 8 != 0) {
+    if (Game.time % 47 != 0) {
         return;
     }
 
