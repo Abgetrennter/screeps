@@ -1,17 +1,17 @@
 export const claimer = function (creep: Creep) {
     /*if ((creep.pos.x!==38||creep.pos.y!=49)&&creep.room.name=='E22S59'){
-      creep.moveTo(38,49);
+      creep.goTo(38,49);
       return;
     }
     else if (creep.room.name=='E22S59'){
       creep.move(BOTTOM);
     }else if(creep.room.name=='E22S60' &&(creep.pos.x!=0||creep.pos.y!=19)){
-      creep.moveTo(0,19);
+      creep.goTo(0,19);
     }else if (creep.room.name=='E22S60'){
       creep.move(LEFT);
     }else if (creep.room.name=='E21S60'){
       if (creep.pos.x!=26||creep.pos.y!=0){
-        creep.moveTo(26,0);
+        creep.goTo(26,0);
       }else{
         creep.move(TOP);
       }
@@ -20,18 +20,19 @@ export const claimer = function (creep: Creep) {
       //console.log(target);
       let flag=creep.claimController(target);
       if (flag===ERR_NOT_IN_RANGE){
-        creep.moveTo(target);
+        creep.goTo(target);
       }
     }*/
     if (creep.room.name == 'W8N3') {
         if (!creep.pos.isEqualTo(22, 49)) {
-            creep.moveTo(22, 49);
+            let i=new RoomPosition(22,49,'W8N3');
+            creep.goTo(i);
         } else {
             creep.move(BOTTOM);
         }
     } else {
         if (creep.claimController(creep.room.controller) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(creep.room.controller);
+            creep.goTo(creep.room.controller);
         }
     }
     /*

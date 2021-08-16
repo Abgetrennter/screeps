@@ -27,11 +27,10 @@ export const upgrader = function (creep: Creep) {
 
     if (creep.memory.Working) {
             /*if(creep.signController(creep.room.controller, "") == ERR_NOT_IN_RANGE) {
-                creep.moveTo(creep.room.controller);
+                creep.goTo(creep.room.controller);
             }*/
         if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(creep.room.controller,
-                {visualizePathStyle: {stroke: '#ffffff'}});
+            creep.goTo(creep.room.controller);
         }
     } else {
 
@@ -40,7 +39,7 @@ export const upgrader = function (creep: Creep) {
         let source: StructureContainer | STRUCTURESPAWN = Game.getObjectById(creep.memory.source as Id<AnyStoreStructure>);
 
         if (creep.withdraw(source, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(source);
+            creep.goTo(source);
         }
     }
 };

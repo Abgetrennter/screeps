@@ -1,4 +1,4 @@
-function simple_new(role, room, count) {
+/*function simple_new(role, room, count) {
     let worker =
         _.filter(Game.creeps, (creep) => creep.memory.role === role);
     if (worker.length < count) {
@@ -9,7 +9,7 @@ function simple_new(role, room, count) {
         return true;
     }
     return false;
-}
+}*/
 
 
 function radio_work_parts(room: Room, n: number): BodyPartConstant[] {
@@ -82,7 +82,7 @@ function new_carrier(room: Room): boolean {
             }
     }).length;
     let worker = room.role_count('carrier');
-    if (worker < count + 1) {
+    if (worker < count *2) {
         let newName = 'carrier' + Game.time % 100;
         let parts = radio_carry_parts(room);
 
@@ -123,7 +123,7 @@ function new_repairer(room: Room) {
     let worker = room.role_count('repairer');
     if (worker < 1) {
         let newName = 'repairer' + Game.time % 100;
-        room.spawn[0].spawnCreep([WORK, WORK, CARRY, MOVE], newName,
+        room.spawn[0].spawnCreep([WORK, WORK, CARRY, MOVE,MOVE,MOVE], newName,
             {memory: {role: 'repairer', Working: true}});
         return true;
     }
@@ -140,12 +140,12 @@ export const config = function (room: Room) {
 
     //回收内存
     gc();
-    let flag = false;
+    //let flag = false;
     // @ts-ignore
     let count = _.sum(Game.creeps, (creep) => (creep.room.name === room.name));
     if (room.energyAvailable < 300 && count < 5) {
         room.size_for_source = 1;
-        flag = true;
+        //flag = true;
     } else {
         room.size_for_source = 3 - room.container.length;
     }
@@ -166,9 +166,9 @@ export const config = function (room: Room) {
     if (new_upgrader(room, parts)) return;
 
     if (new_repairer(room)) return;
-    if (room.controller.level > 3 && !flag) {
+    /*if (room.controller.level > 3 && !flag) {
         if (simple_new('tester', room, 1)) return;
         if (simple_new('remotebuilder', room, 3)) return;
-    }
+    }*/
 
 }

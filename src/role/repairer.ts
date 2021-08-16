@@ -10,14 +10,14 @@ export const repairer = function (creep) {
         let targets: AnyStructure[] = creep.room.find(
             FIND_STRUCTURES, {
                 filter: object =>
-                    (object.hits < object.hitsMax
-                        && (object.structureType !== STRUCTURE_WALL))
+                    ((object.hits < object.hitsMax
+                        && (object.structureType !== STRUCTURE_WALL)
+                        || (object.structureType == STRUCTURE_WALL && object.hits < 100000)))
             })
-        targets.sort((a, b) => a.hits - b.hits);
         // targets.sort((a, b) => a.hits - b.hits);
         if (targets.length) {
             if (creep.repair(targets[0]) === ERR_NOT_IN_RANGE) {
-                creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
+                creep.goTo(targets[0]);
             }
         }
     } else {
@@ -31,7 +31,7 @@ export const repairer = function (creep) {
             }
         });
         if (creep.withdraw(sources[0], RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(sources[0], {visualizePathStyle: {stroke: '#ffaa00'}});
+            creep.goTo(sources[0]);
         }
     }
 };

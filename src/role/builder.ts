@@ -18,14 +18,14 @@ function build(creep: Creep) {
     }
     let flag = creep.build(target);
     if (flag === ERR_NOT_IN_RANGE) {
-        creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+        creep.goTo(target);
     }
     //creep.say(flag);
 }
 
 function upgrader(creep: Creep) {
     if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
-        creep.moveTo(creep.room.controller, {visualizePathStyle: {stroke: '#ffffff'}});
+        creep.goTo(creep.room.controller);
     }
 }
 
@@ -80,7 +80,7 @@ export const builder = function (creep: Creep) {
         }
         //sources.sort((a, b) => (-a.store[RESOURCE_ENERGY] + b.store[RESOURCE_ENERGY]))
         if (creep.withdraw(source, RESOURCE_ENERGY) === ERR_NOT_IN_RANGE) {
-            creep.moveTo(source, {visualizePathStyle: {stroke: '#ffaa00'}});
+            creep.goTo(source);
         }
     }
 };

@@ -27,8 +27,8 @@ function spAex(creep: Creep): boolean {
             filter: (s) => (s.structureType == STRUCTURE_SPAWN
                 && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0)
         })
-        if (targets.length>0){
-            target=targets[0];
+        if (targets.length > 0) {
+            target = targets[0];
         }
     }
 
@@ -57,11 +57,11 @@ function get_target(creep) {
     if (!flag1) {
         let flag2 = spAex(creep);
         if (!flag2) {
-            let i=creep.pos.findClosestByRange(FIND_STRUCTURES,{filter:(s)=>(s.structureType==STRUCTURE_LINK)});
-            if (!i){
+            let i = creep.pos.findInRange(FIND_STRUCTURES,4, {filter: (s) => (s.structureType == STRUCTURE_LINK)});
+            if (!i) {
                 return;
-            }else{
-                creep.memory.target=i.id;
+            } else {
+                creep.memory.target = i.id;
             }
         }
 
@@ -86,13 +86,18 @@ function get_target(creep) {
 }
 
 function do_carry(creep: Creep) {
-        get_target(creep);
+    get_target(creep);
     let target = Game.getObjectById(creep.memory.target as Id<AnyStoreStructure>);
     let flag = creep.transfer(target, RESOURCE_ENERGY);
     if (flag === ERR_NOT_IN_RANGE) {
         creep.room.visual.circle(target.pos, {fill: 'transparent', radius: 0.55, stroke: 'red'});
-        creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+        creep.goTo(target);
     } else {
+        if (flag==ERR_FULL&&target.structureType==STRUCTURE_LINK){
+            let i=creep.room.spawn[0].pos.
+            findClosestByRange(FIND_STRUCTURES,{filter:(s)=>(s.structureType==STRUCTURE_LINK)});
+            target.transferEnergy(i);
+        }
         creep.memory.condition = condition.Source;
         creep.memory.target = null;
     }
@@ -124,8 +129,8 @@ function do_source(creep: Creep) {
     const source = Game.getObjectById(creep.memory.source as Id<Source>);
     if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
         creep.room.visual.circle(source.pos, {fill: 'transparent', radius: 0.55, stroke: 'blue'});
-        creep.moveTo(source,
-            {visualizePathStyle: {stroke: '#ffaa00'}});
+        creep.goTo(source.pos.findClosestByRange<StructureContainer>(FIND_STRUCTURES,
+            {filter:(s)=>(s.structureType==STRUCTURE_CONTAINER)}));
     }
     if (creep.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
         creep.memory.condition = condition.Select;

@@ -113,11 +113,9 @@ const OPPOSITE_EXIT = {
     [FIND_EXIT_RIGHT]: FIND_EXIT_LEFT
 };
 
-/*Memory.playerWhiteList || (Memory.playerWhiteList = {});
-_.defaults(Memory.playerWhiteList, cfg.DEFAULT_PLAYER_WHITELIST);*/
 
 function isHostile(username) {
-    return username !== cfg.USER_NAME ;//&& !Memory.playerWhiteList[username];
+    return username !== cfg.USER_NAME ;
 }
 
 // TODO: 定制何时需要对穿, 请按需启用或自行编制规则
@@ -125,14 +123,15 @@ function isHostile(username) {
 function canBypassCreep(i, creep) {
     if (!creep.my)
         return false;
-    // if (creep.memory.role === "manage")
+    // if (creep.memory.role == "manage")
     //     return false;
-    // if (i.memory.role === creep.memory.role)
+    // if (i.memory.role == creep.memory.role)
     //     return false;
     if (movingCreeps[creep.name])
         return true;
-    return !creepPostionLock[creep.name];
-
+    if (creepPostionLock[creep.name])
+        return false;
+    return true;
 }
 
 /** 现在目标 Creep 就在面前, 是否需要对穿他 */
@@ -141,7 +140,7 @@ function shouldDoBypassCreep(i, creep) {
         return false;
     // if (!creep.my)
     //     return false;
-    // if (creep.memory.role === "manage")
+    // if (creep.memory.role == "manage")
     //     return false;
     if (i.memory.role === creep.memory.role)
         return false;
@@ -229,7 +228,7 @@ class CostMatrixCache {
     }
 
     static get(roomName, type) {
-        var _a;
+        let _a;
         (_a = this.cacheStore)[roomName] || (_a[roomName] = new CostMatrixCache(roomName));
         this.cacheStore[roomName].tryUpdate();
         return this.cacheStore[roomName][type];
@@ -353,7 +352,7 @@ Memory.roomsToAvoid || (Memory.roomsToAvoid = {});
 Memory.roomCost || (Memory.roomCost = {});
 
 function findPath(creep, opts, forceUpdate) {
-    var _a;
+    let _a;
     const sameRoom = opts && (!opts.crossRoom) && (creep.room.name === opts.pos.roomName);
     let cmModified = [];
     let path;
@@ -394,7 +393,7 @@ function findPath(creep, opts, forceUpdate) {
 }
 
 function findRouteCallback(roomName) {
-    var _a, _b;
+    let _a, _b;
     if (Memory.roomsToAvoid[roomName])
         return Infinity;
     if (Memory.roomCost[roomName])
@@ -409,8 +408,8 @@ function findRouteCallback(roomName) {
 }
 
 function moveByPath(creep, path) {
-    var _a;
-    var idx = _.findIndex(path, (i) => i.isEqualTo(creep.pos));
+    let _a;
+    let idx = _.findIndex(path, (i) => i.isEqualTo(creep.pos));
     if (idx === -1) {
         if (!((_a = path[0]) === null || _a === void 0 ? void 0 : _a.isNearTo(creep.pos))) {
             return false;
@@ -424,7 +423,7 @@ function moveByPath(creep, path) {
 }
 
 function goTo(creep, opts) {
-    if (creep.memory.PositionInpresent != undefined && creep.memory.PositionInpresent.x === opts.pos.x && creep.memory.PositionInpresent.y === opts.pos.y && creep.memory.PositionInpresent.roomName === opts.pos.roomName) {
+    if (creep.memory.PositionInpresent !== undefined && creep.memory.PositionInpresent.x === opts.pos.x && creep.memory.PositionInpresent.y === opts.pos.y && creep.memory.PositionInpresent.roomName === opts.pos.roomName) {
         creep.memory.StillStandTick++;
     } else {
         creep.memory.StillStandTick = 0;
@@ -587,6 +586,6 @@ function processMovement() {
     });
 }
 
-exports.prepare = prepareMovement;
-exports.process = processMovement;
+export const prepare = prepareMovement;
+export const process = processMovement;
 //# sourceMappingURL=main.js.map

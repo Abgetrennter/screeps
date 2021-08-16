@@ -1,9 +1,8 @@
 import '@/prototype/room';
 import '@/modules/建筑缓存';
 import '@/prototype/creep';
-
+import {prepare, process} from "@/modules/FindWay_OtherPlayerCode";
 import {config} from "@/begin.balance";
-//import {source} from '@/init';
 import {ErrorMapper} from '@/modules/errorMapper';
 import {builder} from '@/role/builder';
 import {carrier} from '@/role/carrier';
@@ -32,7 +31,7 @@ for (let room in Game.rooms) {
 
 
 function tower(room: Room) {
-    let towers = room.tower;
+    let towers: StructureTower[] = room.tower;
     if (towers.length > 0) {
         for (let tower_name in towers) {
             let tower = towers[tower_name];
@@ -41,10 +40,11 @@ function tower(room: Room) {
                 tower.attack(closestHostile);
                 continue;
             }
-            let DamagedStructure = tower.room.find(
+            let DamagedStructure = tower.room.find<AnyStructure>(
                 FIND_STRUCTURES,
                 {
-                    filter: (structure) => (structure.hits < structure.hitsMax && structure.hits < 2500)
+                    filter: (structure) => (structure.hits < structure.hitsMax && structure.hits < 4000
+                        && structure.structureType !== STRUCTURE_WALL)
                 });
             if (DamagedStructure.length) {
                 DamagedStructure.sort((a, b) => a.hits - b.hits);
@@ -55,9 +55,10 @@ function tower(room: Room) {
         }
     }
 }
+
 //
 export const loop = ErrorMapper.wrapLoop(() => {
-
+    prepare();
     for (let room in Game.rooms) {
         config(Game.rooms[room]);
         tower(Game.rooms[room]);
@@ -100,9 +101,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
                 break;
             }
 
-            case 'remotebuilder':{
+            case 'remotebuilder': {
                 remotebuilder(creep);
             }
         }
     }
+    process();
 })

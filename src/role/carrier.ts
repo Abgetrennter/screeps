@@ -53,7 +53,7 @@ function get_SourceStructures(creep: Creep): AnyStoreStructure {
     let sources = creep.pos.findClosestByRange<StructureContainer>(FIND_STRUCTURES, {
         filter: (structure) => {
             return ((structure.structureType === STRUCTURE_CONTAINER) &&
-                structure.store[RESOURCE_ENERGY] > 0);
+                structure.store[RESOURCE_ENERGY] > 200);
         }
     });
 
@@ -73,24 +73,45 @@ function get_SourceStructures(creep: Creep): AnyStoreStructure {
     }
 }
 
-function get_source(creep: Creep): void {
-    let resource = get_resource(creep);
-    if (!resource) {
-        let source = get_SourceStructures(creep);
-        if (!source) {
-            creep.memory.condition = state.Source;
-            return;
-        } else {
-            creep.memory.condition = state.Trans;
-            creep.memory.source = source.id;
-            do_source(creep);
-        }
+function get_link(creep: Creep): StructureLink {
+    let link = creep.room.spawn[0].pos.findClosestByRange(FIND_STRUCTURES,
+        {filter: (s) => (s.structureType == STRUCTURE_LINK && s.store.getFreeCapacity(RESOURCE_ENERGY) == 0)});
+    if (link) {
+        return link;
     } else {
-        creep.memory.condition = state.Pickup;
-        //console.log(flag);
-        creep.memory.source = resource.id;
-        do_pick(creep);
+        return null;
     }
+}
+
+function get_source(creep: Creep): void {
+    if (Game.time % 10 == 0) {
+        let resource = get_resource(creep);
+        if (!!resource) {
+            creep.memory.condition = state.Pickup;
+            //console.log(flag);
+            creep.memory.source = resource.id;
+            do_pick(creep);
+            return;
+        }
+    }
+    //
+    //if (!resource) {
+    let source: any = get_link(creep);
+    if (!source) {
+        source = get_SourceStructures(creep);
+    }
+    if (!source) {
+        creep.memory.condition = state.Source;
+        return;
+    } else {
+        creep.memory.condition = state.Trans;
+        creep.memory.source = source.id;
+        do_source(creep);
+    }/*
+
+    } else {
+
+    }*/
 }
 
 function do_source(creep: Creep) {
@@ -99,26 +120,31 @@ function do_source(creep: Creep) {
     //console.log(flag);
     if (flag === ERR_NOT_IN_RANGE) {
         creep.room.visual.circle(target.pos, {fill: 'transparent', radius: 0.55, stroke: 'green'});
-        creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+        creep.goTo(target);
         return;
     }
 }
 
 function do_pick(creep: Creep) {
     let target = Game.getObjectById(creep.memory.source as Id<Resource>);
+    if (!target){
+        creep.memory.condition=state.Source;
+        return;
+    }
     let flag = creep.pickup(target);
     //console.log(flag);
     creep.memory.source = target.id;
     if (flag === ERR_NOT_IN_RANGE) {
         creep.room.visual.circle(target.pos, {fill: 'transparent', radius: 0.55, stroke: 'yellow'});
-        creep.moveTo(target, {visualizePathStyle: {stroke: '#ffffff'}});
+        creep.goTo(target);
         return;
     }
+
 }
 
 function get_target(creep: Creep): AnyStoreStructure {
     let target = creep.room.tower.sort((a, b) => (a.store[RESOURCE_ENERGY] - b.store[RESOURCE_ENERGY]))[0];
-    if (!target || target.store.getUsedCapacity(RESOURCE_ENERGY) >800) {
+    if (!target || target.store.getUsedCapacity(RESOURCE_ENERGY) > 800) {
         target = creep.pos.findClosestByRange<AnyStoreStructure>(FIND_STRUCTURES, {
             filter: (structure) => {
                 return ((structure.structureType === STRUCTURE_EXTENSION ||
@@ -141,18 +167,18 @@ function get_target(creep: Creep): AnyStoreStructure {
 
 function do_carry(creep: Creep) {
     if (creep.store.getUsedCapacity(RESOURCE_ENERGY) === 0) {
-    creep.memory.condition = state.Source;}
+        creep.memory.condition = state.Source;
+    }
     let target = get_target(creep);
     if (!target) return;
     let flag: number;
     flag = creep.transfer(target, RESOURCE_ENERGY);
     if (flag === ERR_NOT_IN_RANGE) {
-        creep.moveTo(target,
-            {visualizePathStyle: {stroke: '#ffffff'}});
+        creep.goTo(target);
     } else { //if (flag === OK)
         //creep.memory.target = null;
 
-        }
+    }
 }
 
 
@@ -163,7 +189,7 @@ export const carrier = function (creep: Creep) {
             break;
         }
         case state.Pickup: {
-            get_source(creep);
+            do_pick(creep);
             break;
         }
         case state.Trans: {
