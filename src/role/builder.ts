@@ -25,7 +25,7 @@ function build(creep: Creep) {
 
 function upgrader(creep: Creep) {
     if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
-        creep.goTo(creep.room.controller);
+        creep.goTo(creep.room.controller,3);
     }
 }
 

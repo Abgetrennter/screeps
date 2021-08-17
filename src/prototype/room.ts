@@ -1,4 +1,7 @@
+import {state} from '@/role/carrier'
+
 Room.prototype.role_count = function (role) {
+    // @ts-ignore
     return _.sum(Game.creeps, (creep) =>
         (creep.memory.role === role && creep.room.name === this.name));
 }
@@ -6,26 +9,23 @@ Room.prototype.role_count = function (role) {
 Object.defineProperty(Room.prototype, 'source_count', {
     get: function () {
         if (!this._sc) {
-            let sc = {};
-            for (let name in this.source) {
-                sc[this.source[name].id] = 0;
-            }
-            let workers = _.filter(Game.creeps, (creep) =>
-                (creep.memory.role === 'harvester' && creep.room.name === this.name));
-            for (let i in workers) {
-                let creep = workers[i];
-                if (!creep.memory.source || !(creep.memory.source in sc)) {
-                    continue;
+            if (!this.memory.sc){
+                let sc = {};
+                for (let name in this.source) {
+                    sc[this.source[name].id] = 0;
                 }
-                sc[creep.memory.source] += 1;
-            }
-            if (!this.memory.sc) {
+                let workers = _.filter(Game.creeps, (creep) =>
+                    (creep.memory.role === 'harvester' && creep.room.name === this.name));
+                for (let i in workers) {
+                    let source = workers[i].memory.source;
+                    if (!source|| !(source in sc)) {
+                        continue;
+                    }
+                    sc[source] += 1;
+                }
                 this.memory.sc = sc;
-            } else {
-                delete this.memory.sc;
-                this.memory.sc = sc;
             }
-            this._sc = sc;
+            this._sc = this.memory.sc;
         }
         return this._sc;
     },
@@ -50,6 +50,43 @@ Object.defineProperty(Room.prototype, 'size_for_source', {
     enumerable: false,
     configurable: true,
 });
+Object.defineProperty(Room.prototype, 'carrier_source', {
+    get: function () {
+        if (!this._cc) {
+            if (!this.memory.cc) {
+                let cc = {}
+                for (let i in this.mass_stores) {
+                    cc[this.mass_stores[i].id] = 0;
+                }
+                let work = _.filter(Game.creeps, (creep) =>
+                    (creep.memory.role === 'harvester' &&
+                        creep.room.name === this.name &&
+                        creep.memory.condition === state.Trans));
+                for (let i in work) {
+                    if (work[i].memory.condition === state.Trans) {
+                        let cm = work[i].memory;
+                        if (cm && cm.source in cc) {
+                            cc[cm.source] += 1;
+                        }
+                    }
+                }
+                this.memory.cc = cc
+            }
+            this._cc = this.memory.cc;
+        }
+        return this._cc;
+    },
+    enumerable: false,
+    configurable: true
+});
+Room.prototype.get_container = function () {
+    for (let i in this.carrier_source) {
+        if (this.carrier_source[i]<2){
+            this.carrier_source[i]+=1;
+            return i;
+        }
+    }
+}
 
 /*function count_creep(name) {
     let roles={};
@@ -66,25 +103,13 @@ Object.defineProperty(Room.prototype, 'size_for_source', {
     }
     return roles;
 }
-
-
-
-Object.defineProperty(Room.prototype,'roles',{
-    get:function (){
-        if (!this._roles){
-            if (!this.memory.roles){
-                this.memory.roles=count_creep(this.name);
-            }
-            this._roles=this.memory.roles;
-        }
-        return this._roles;
-    },
-    enumerable: false,
-    configurable: true
-})
 */
 
-/*Object.defineProperty(Room.prototype, 'AvailableEnergy', {
+/*
+
+*/
+/*
+Object.defineProperty(Room.prototype, 'get_container', {
     get: function () {
         if (!this.ava) {
             if (!this.memory.ava) {

@@ -4,7 +4,8 @@
     "start": "rollup -cw --environment DEST:main",
     "local": "rollup -cw --environment DEST:local",
     "build": "rollup -cw",
-    "sim"  : "rollup -cw --environment DEST:sim"
+    "sim": "rollup -cw --environment DEST:sim",
+    "ptr": "rollup -cw --environment DEST:ptr"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^14.0.0",

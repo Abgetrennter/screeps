@@ -50,8 +50,6 @@ function tower(room: Room) {
                 DamagedStructure.sort((a, b) => a.hits - b.hits);
                 tower.repair(DamagedStructure[0]);
             }
-
-
         }
     }
 }

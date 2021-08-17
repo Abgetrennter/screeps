@@ -6,7 +6,7 @@
  * carry 送到spawn ex 塔中,
  * die 要死了丢掉资源,
  */
-enum state {
+export enum state {
     Source,
     Pickup,
     Trans,
@@ -50,13 +50,13 @@ function get_resource(creep: Creep): Resource {
 }
 
 function get_SourceStructures(creep: Creep): AnyStoreStructure {
-    let sources = creep.pos.findClosestByRange<StructureContainer>(FIND_STRUCTURES, {
+    /*let sources = creep.pos.findClosestByRange<StructureContainer>(FIND_STRUCTURES, {
         filter: (structure) => {
             return ((structure.structureType === STRUCTURE_CONTAINER) &&
                 structure.store[RESOURCE_ENERGY] > 200);
         }
-    });
-
+    });*/
+    let sources=creep.room.container.sort((a,b)=>(b.store[RESOURCE_ENERGY]-a.store[RESOURCE_ENERGY]))[0]
     /*if (sources.length > 0) {
         // @ts-ignore
         sources.sort((a, b) => (b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]));
@@ -74,7 +74,7 @@ function get_SourceStructures(creep: Creep): AnyStoreStructure {
 }
 
 function get_link(creep: Creep): StructureLink {
-    let link = creep.room.spawn[0].pos.findClosestByRange(FIND_STRUCTURES,
+    let link = creep.room.spawn[0].pos.findClosestByRange<StructureLink>(FIND_STRUCTURES,
         {filter: (s) => (s.structureType == STRUCTURE_LINK && s.store.getFreeCapacity(RESOURCE_ENERGY) == 0)});
     if (link) {
         return link;

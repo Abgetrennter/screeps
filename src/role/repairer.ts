@@ -14,7 +14,7 @@ export const repairer = function (creep) {
                         && (object.structureType !== STRUCTURE_WALL)
                         || (object.structureType == STRUCTURE_WALL && object.hits < 100000)))
             })
-        // targets.sort((a, b) => a.hits - b.hits);
+        targets.sort((a, b) => a.hits/a.hitsMax - b.hits/b.hitsMax);
         if (targets.length) {
             if (creep.repair(targets[0]) === ERR_NOT_IN_RANGE) {
                 creep.goTo(targets[0]);

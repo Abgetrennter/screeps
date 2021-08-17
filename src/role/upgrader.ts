@@ -30,7 +30,7 @@ export const upgrader = function (creep: Creep) {
                 creep.goTo(creep.room.controller);
             }*/
         if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
-            creep.goTo(creep.room.controller);
+            creep.goTo(creep.room.controller,3);
         }
     } else {
 

@@ -1,3 +1,4 @@
+import {condition} from'@/role/harvester'
 /*function simple_new(role, room, count) {
     let worker =
         _.filter(Game.creeps, (creep) => creep.memory.role === role);
@@ -52,6 +53,12 @@ function radio_carry_parts(room: Room, energy: number = 0): BodyPartConstant[] {
 function gc(): void {
     for (let name in Memory.creeps) {
         if (!Game.creeps[name]) {
+            if (Memory.creeps[name].role === 'harvester') {
+                let creepMemory:CreepMemory=Memory.creeps[name];
+                let room=Game.rooms[creepMemory.room];
+                room.source_count[creepMemory.source] -= 1;
+                if (room.source_count[creepMemory.source] < 0) room.source_count[creepMemory.source] = 0;
+            }
 // console.log(targets[i].creep.name);
             delete Memory.creeps[name];
         }
@@ -64,9 +71,9 @@ function new_harvester(parts: BodyPartConstant[], room: Room): boolean {
     let count = room.source.length * room.size_for_source;
     let worker = room.role_count('harvester');
     if (worker < count) {
-        let newName = 'harvester' + Game.time % 100;
+        let newName = room.name+'harvester' + Game.time % 100;
         let flag = room.spawn[0].spawnCreep(parts, newName,
-            {memory: {role: 'harvester', condition: 6}});
+            {memory: {role: 'harvester', condition: condition.Init,room:room.name}});
         if (flag === OK) {
             return true;
         }
@@ -106,7 +113,7 @@ function new_builder(room: Room, parts: BodyPartConstant[]): boolean {
 
 function new_upgrader(room: Room, parts: BodyPartConstant[]): boolean {
     let worker = room.role_count('upgrader');
-    let count = 2;
+    let count = 4;
     if (room.controller.level<4){
         count=4;
     }

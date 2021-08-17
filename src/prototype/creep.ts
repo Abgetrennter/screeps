@@ -8,12 +8,6 @@ Creep.prototype.goDie = function () {
     } else if (this.ticksToLive < 10) {
         this.say("A~W~S~L");
         return true;
-    } else if (this.ticksToLive === 1) {
-        if (this.memory.role === 'harvester') {
-            this.room.source_count[this.memory.source] -= 1;
-            if (this.room.source_count[this.memory.source] < 0) this.room.source_count[this.memory.source] = 0;
-        }
-        delete Memory.creeps[this.name];
     } else {
         return false;
     }
@@ -46,6 +40,7 @@ Object.defineProperty(Creep.prototype, 'Source', {
     enumerable: false,
     configurable: true
 });
+
 Object.defineProperty(Creep.prototype, 'Target', {
     get: function () {
         // 如果 room 对象内部没有保存该值

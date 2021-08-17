@@ -1,4 +1,4 @@
-enum condition {
+export enum condition {
     Source,
     Select,
     Build_Container,
@@ -53,36 +53,19 @@ function container(creep: Creep): boolean {
 }
 
 function get_target(creep) {
-    let flag1 = container(creep);
-    if (!flag1) {
-        let flag2 = spAex(creep);
-        if (!flag2) {
-            let i = creep.pos.findInRange(FIND_STRUCTURES,4, {filter: (s) => (s.structureType == STRUCTURE_LINK)});
-            if (!i) {
-                return;
-            } else {
-                creep.memory.target = i.id;
-            }
-        }
-
+    if (container(creep)) {
+        return;
     }
-    //let flag1 = tower(creep);
-    /*let flag2;
-    let flag3;
-    let count = creep.room.role_count('carrier');
-    //if (target === null&&count==0) {
-    if ( count === 0) {
-        flag2 = spAex(creep);
+    if (spAex(creep)) {
+        return;
+    }
+    let i = creep.pos.findInRange(FIND_STRUCTURES, 4, {filter: (s) => (s.structureType == STRUCTURE_LINK)});
+    if (!i) {
+        return;
     } else {
-        flag3 = container(creep);
+        creep.memory.target = i.id;
     }
-    if (!(flag2 || flag3)) {
-        //console.log(creep.room.storage)
-        if (creep.room.storage) {
-            creep.memory.target = creep.room.storage.id;
-        }
-    }
-    return;*/
+
 }
 
 function do_carry(creep: Creep) {
@@ -93,9 +76,9 @@ function do_carry(creep: Creep) {
         creep.room.visual.circle(target.pos, {fill: 'transparent', radius: 0.55, stroke: 'red'});
         creep.goTo(target);
     } else {
-        if (flag==ERR_FULL&&target.structureType==STRUCTURE_LINK){
-            let i=creep.room.spawn[0].pos.
-            findClosestByRange(FIND_STRUCTURES,{filter:(s)=>(s.structureType==STRUCTURE_LINK)});
+        if (flag == ERR_FULL && target.structureType == STRUCTURE_LINK) {
+            let i = creep.room.spawn[0].pos.findClosestByRange<StructureLink>
+            (FIND_STRUCTURES, {filter: (s) => (s.structureType == STRUCTURE_LINK)});
             target.transferEnergy(i);
         }
         creep.memory.condition = condition.Source;
@@ -114,9 +97,9 @@ function do_init(creep: Creep) {
         }
         if (!creep.memory.source) {
             creep.memory.source = creep.room.source[0].id;
+            creep.room.source_count[creep.memory.source] += 1;
         }
-    }
-    if (!!creep.memory.source) {
+    } else {
         if (creep.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
             creep.memory.condition = condition.Select;
         } else {
@@ -129,8 +112,9 @@ function do_source(creep: Creep) {
     const source = Game.getObjectById(creep.memory.source as Id<Source>);
     if (creep.harvest(source) === ERR_NOT_IN_RANGE) {
         creep.room.visual.circle(source.pos, {fill: 'transparent', radius: 0.55, stroke: 'blue'});
-        creep.goTo(source.pos.findClosestByRange<StructureContainer>(FIND_STRUCTURES,
-            {filter:(s)=>(s.structureType==STRUCTURE_CONTAINER)}));
+        let i = source.pos.findClosestByRange<StructureContainer>(FIND_STRUCTURES,
+            {filter: (s) => (s.structureType == STRUCTURE_CONTAINER)})
+        creep.goTo(i, 0);
     }
     if (creep.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
         creep.memory.condition = condition.Select;
@@ -218,7 +202,9 @@ function repair_container(creep: Creep) {
         }
     }
     const target = Game.getObjectById(creep.memory.target as Id<StructureContainer>);
-    creep.repair(target);
+    if (creep.repair(target) === ERR_NOT_IN_RANGE) {
+        creep.goTo(target, 0);
+    }
     if (creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0) {
         creep.memory.target = null;
         creep.memory.condition = condition.Source;

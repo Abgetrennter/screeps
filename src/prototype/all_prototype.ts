@@ -1,7 +1,12 @@
+interface Memory {
+    ContainerMemory:LinkMemory;
+}
+
 interface Creep {
     Source: Id<any>,
     goDie(): boolean,
 }
+
  interface Creep{
        //获取、设置本 tick 内 creep 是否允许被对穿 (true 就不对穿)
      posLock: boolean,
@@ -17,23 +22,41 @@ interface Creep {
         goToRoom(room: string): boolean;
  }
 
-interface RoomMemory{
-    roles:object,
-}
 
 interface StructureSpawn {
     AvailableEnergy(): void,
 }
 
 interface Room {
-    role_count(key:string):number,
     source:Source[],
     container:StructureContainer[],
     mass_stores:AnyStoreStructure[],
+    spawn:StructureSpawn[],
+    my:boolean,
+    level:number,
+    power:number,
+
+    role_count(key:string):number,
     source_count:object,
     [key: string]: any,
 }
 
+interface RoomMemory {
+    sc:object,
+    ss:number,
+    cc:object,
+}
+
 interface StructureLink {
-    full:boolean;
+    full:boolean,
+    memory:LinkMemory,
+    isin:boolean,
+}
+
+interface LinkMemory {
+    [key: string]: MyLink,
+}
+
+interface MyLink {
+    _isin?:boolean,
 }
