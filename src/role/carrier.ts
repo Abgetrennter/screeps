@@ -50,13 +50,13 @@ function get_resource(creep: Creep): Resource {
 }
 
 function get_SourceStructures(creep: Creep): AnyStoreStructure {
-    /*let sources = creep.pos.findClosestByRange<StructureContainer>(FIND_STRUCTURES, {
+    let sources = creep.pos.findClosestByRange<StructureContainer>(FIND_STRUCTURES, {
         filter: (structure) => {
             return ((structure.structureType === STRUCTURE_CONTAINER) &&
                 structure.store[RESOURCE_ENERGY] > 200);
         }
-    });*/
-    let sources=creep.room.container.sort((a,b)=>(b.store[RESOURCE_ENERGY]-a.store[RESOURCE_ENERGY]))[0]
+    });
+    //let sources = creep.memory.source;
     /*if (sources.length > 0) {
         // @ts-ignore
         sources.sort((a, b) => (b.store[RESOURCE_ENERGY] - a.store[RESOURCE_ENERGY]));
@@ -96,10 +96,8 @@ function get_source(creep: Creep): void {
     }
     //
     //if (!resource) {
-    let source: any = get_link(creep);
-    if (!source) {
-        source = get_SourceStructures(creep);
-    }
+    /*let source: any = get_link(creep);*/
+    let source = get_SourceStructures(creep);
     if (!source) {
         creep.memory.condition = state.Source;
         return;
@@ -127,8 +125,8 @@ function do_source(creep: Creep) {
 
 function do_pick(creep: Creep) {
     let target = Game.getObjectById(creep.memory.source as Id<Resource>);
-    if (!target){
-        creep.memory.condition=state.Source;
+    if (!target) {
+        creep.memory.condition = state.Source;
         return;
     }
     let flag = creep.pickup(target);

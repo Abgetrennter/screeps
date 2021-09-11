@@ -1,16 +1,15 @@
 import {condition} from'@/role/harvester'
-/*function simple_new(role, room, count) {
-    let worker =
-        _.filter(Game.creeps, (creep) => creep.memory.role === role);
-    if (worker.length < count) {
+function simple_new(role: string, room:Room, parts: BodyPartConstant[], count: number) {
+    let worker =room.role_count(role);
+    if (worker < count) {
         let newName = role + Game.time % 100;
 
-        room.spawn[0].spawnCreep([WORK,WORK,CARRY, CARRY,MOVE,MOVE, MOVE, MOVE], newName,
+        room.spawn[0].spawnCreep(parts, newName,
             {memory: {role: role}});
         return true;
     }
     return false;
-}*/
+}
 
 
 function radio_work_parts(room: Room, n: number): BodyPartConstant[] {
@@ -56,8 +55,8 @@ function gc(): void {
             if (Memory.creeps[name].role === 'harvester') {
                 let creepMemory:CreepMemory=Memory.creeps[name];
                 let room=Game.rooms[creepMemory.room];
-                room.source_count[creepMemory.source] -= 1;
-                if (room.source_count[creepMemory.source] < 0) room.source_count[creepMemory.source] = 0;
+                room.my_source[creepMemory.source]['count'] -= 1;
+                if (room.my_source[creepMemory.source]['count'] < 0) room.my_source[creepMemory.source]['count'] = 0;
             }
 // console.log(targets[i].creep.name);
             delete Memory.creeps[name];
@@ -89,7 +88,7 @@ function new_carrier(room: Room): boolean {
             }
     }).length;
     let worker = room.role_count('carrier');
-    if (worker < count *2) {
+    if (worker < count +1) {
         let newName = 'carrier' + Game.time % 100;
         let parts = radio_carry_parts(room);
 
@@ -165,6 +164,7 @@ export const config = function (room: Room) {
      */
     if (new_harvester(radio_work_parts(room, 3), room)) return;
 
+    if (simple_new('linker',room,[CARRY,MOVE,MOVE],1)) return;
 
     if (new_carrier(room)) return;
 

@@ -1,4 +1,4 @@
-
+/**
 Object.defineProperty(StructureContainer.prototype, 'memory', {
     configurable: true,
     get: function() {
@@ -37,4 +37,4 @@ Object.defineProperty(StructureContainer.prototype, 'source', {
         this._isin=value;
         this.memory.source = value;
     }
-});
+});*/

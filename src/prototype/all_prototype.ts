@@ -37,8 +37,18 @@ interface Room {
     power:number,
 
     role_count(key:string):number,
-    source_count:object,
+    my_source:RoomSources,
     [key: string]: any,
+}
+
+interface RoomSources {
+    [key: string]: RoomSource,
+}
+
+interface RoomSource {
+    count?:number,
+    container?:Id<StructureContainer>,
+    link?:Id<StructureLink>,
 }
 
 interface RoomMemory {

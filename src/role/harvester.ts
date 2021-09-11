@@ -17,13 +17,13 @@ function tower(creep: Creep): boolean {
     return true;
 }
 */
-function spAex(creep: Creep): boolean {
-    let target = creep.pos.findClosestByRange<AnyStoreStructure>(FIND_STRUCTURES, {
+function spAex(creep: Creep):StructureExtension|StructureSpawn {
+    let target = creep.pos.findClosestByRange<StructureExtension|StructureSpawn>(FIND_STRUCTURES, {
         filter: (s) => (s.structureType == STRUCTURE_EXTENSION
             && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0)
     });
     if (!target) {
-        let targets = creep.room.find<AnyStoreStructure>(FIND_STRUCTURES, {
+        let targets = creep.room.find<StructureSpawn>(FIND_STRUCTURES, {
             filter: (s) => (s.structureType == STRUCTURE_SPAWN
                 && s.store.getFreeCapacity(RESOURCE_ENERGY) > 0)
         })
@@ -33,44 +33,35 @@ function spAex(creep: Creep): boolean {
     }
 
     if (!target) {
-        return false;
+        return null;
     } else {
-        creep.memory.target = target.id;
-        return true;
+        //.memory.target = target.id;
+        return target;
     }
 }
 
-function container(creep: Creep): boolean {
-    let target = creep.pos.findInRange(FIND_STRUCTURES, 4, {
-        filter: (structure) => {
-            return (structure.structureType === STRUCTURE_CONTAINER) &&
-                structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-        }
-    });
-    if (!target || target.length == 0) return false;
-    creep.memory.target = target[0].id;
-    return true;
-}
+function get_target(creep):AnyStoreStructure {
+    let container = Game.getObjectById(creep.room.my_source[creep.memory.source]['container'] as Id<StructureContainer>);
+    if (container.store.getFreeCapacity(RESOURCE_ENERGY) != 0) {
+        creep.memory.target=creep.room.my_source[creep.memory.source]['container'];
+        return container;
+    }
 
-function get_target(creep) {
-    if (container(creep)) {
-        return;
-    }
-    if (spAex(creep)) {
-        return;
-    }
-    let i = creep.pos.findInRange(FIND_STRUCTURES, 4, {filter: (s) => (s.structureType == STRUCTURE_LINK)});
+    let i = Game.getObjectById(creep.room.my_source[creep.memory.source]['link'] as Id<StructureLink>);
     if (!i) {
-        return;
+        creep.memory.target = creep.room.my_source[creep.memory.source]['link'];
     } else {
-        creep.memory.target = i.id;
+        return i;
+    }
+    let ex=spAex(creep);
+    if (!!ex) {
+        return ex;
     }
 
 }
 
 function do_carry(creep: Creep) {
-    get_target(creep);
-    let target = Game.getObjectById(creep.memory.target as Id<AnyStoreStructure>);
+    let target = get_target(creep);
     let flag = creep.transfer(target, RESOURCE_ENERGY);
     if (flag === ERR_NOT_IN_RANGE) {
         creep.room.visual.circle(target.pos, {fill: 'transparent', radius: 0.55, stroke: 'red'});
@@ -80,24 +71,24 @@ function do_carry(creep: Creep) {
             let i = creep.room.spawn[0].pos.findClosestByRange<StructureLink>
             (FIND_STRUCTURES, {filter: (s) => (s.structureType == STRUCTURE_LINK)});
             target.transferEnergy(i);
+            creep.transfer(target, RESOURCE_ENERGY);
         }
         creep.memory.condition = condition.Source;
-        creep.memory.target = null;
     }
 }
 
 function do_init(creep: Creep) {
     if (!creep.memory.source) {
-        for (let i in creep.room.source_count) {
-            if (creep.room.source_count[i] < creep.room.size_for_source) {
-                creep.room.source_count[i] += 1;
+        for (let i in creep.room.my_source) {
+            if (creep.room.my_source[i]['count'] < creep.room.size_for_source) {
+                creep.room.my_source[i]['count'] += 1;
                 creep.memory.source = i;
                 break;
             }
         }
         if (!creep.memory.source) {
             creep.memory.source = creep.room.source[0].id;
-            creep.room.source_count[creep.memory.source] += 1;
+            creep.room.my_source[creep.memory.source]['count'] += 1;
         }
     } else {
         if (creep.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
@@ -140,9 +131,8 @@ function put_container(px: number, py: number, name: string): boolean {
 
 function select(creep: Creep): void {
     let sou = Game.getObjectById(creep.memory.source as Id<Source>);
-    let con = sou.pos.findInRange<StructureContainer>(FIND_STRUCTURES,
-        2, {filter: (s) => (s.structureType === STRUCTURE_CONTAINER)});
-    if (con.length == 0) {
+    let con = Game.getObjectById(creep.room.my_source[creep.memory.source]['container']);
+    if (!con) {
         let cons = sou.pos.findInRange(FIND_CONSTRUCTION_SITES, 2,
             {filter: (s) => (s.structureType == STRUCTURE_CONTAINER)});
         if (cons.length == 0) {
@@ -156,8 +146,8 @@ function select(creep: Creep): void {
             creep.memory.condition = condition.Build_Container;
         }
     } else {
-        if (con[0].hits < 100000) {
-            creep.memory.target = con[0].id;
+        if (con.hits < 100000) {
+            creep.memory.target = con.id;
             creep.memory.condition = condition.Repair_Container;
         } else {
             creep.memory.condition = condition.Carry;
@@ -166,7 +156,8 @@ function select(creep: Creep): void {
 }
 
 function build_container(creep: Creep) {
-    if (!creep.memory.target) {
+    let target = Game.getObjectById(creep.memory.target as Id<ConstructionSite>);
+    if (!target) {
         let cons = Game.getObjectById(creep.memory.source as Id<Source>).pos.findInRange(
             FIND_CONSTRUCTION_SITES, 2, {
                 filter: (s) =>
@@ -176,10 +167,10 @@ function build_container(creep: Creep) {
             creep.memory.condition = condition.Select;
             return;
         } else {
-            creep.memory.target = cons[0].id;
+            creep.memory.target = cons[0].id
+            target = cons[0];
         }
     }
-    const target = Game.getObjectById(creep.memory.target as Id<ConstructionSite>);
     let flag = creep.build(target);
     if (creep.store.getUsedCapacity(RESOURCE_ENERGY) == 0 || flag == ERR_INVALID_TARGET) {
         creep.memory.target = null;
@@ -188,8 +179,10 @@ function build_container(creep: Creep) {
 }
 
 function repair_container(creep: Creep) {
-    if (!creep.memory.target) {
-        let cons = Game.getObjectById(creep.memory.source as Id<Source>).pos.findInRange(
+    let target = Game.getObjectById(creep.memory.target as Id<StructureContainer>);
+
+    if (!target) {
+        let cons = Game.getObjectById(creep.memory.source as Id<Source>).pos.findInRange<StructureContainer>(
             FIND_STRUCTURES, 2, {
                 filter: (s) =>
                     (s.structureType == STRUCTURE_CONTAINER)
@@ -199,9 +192,9 @@ function repair_container(creep: Creep) {
             return;
         } else {
             creep.memory.target = cons[0].id;
+            target = cons[0];
         }
     }
-    const target = Game.getObjectById(creep.memory.target as Id<StructureContainer>);
     if (creep.repair(target) === ERR_NOT_IN_RANGE) {
         creep.goTo(target, 0);
     }

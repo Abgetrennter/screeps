@@ -14,8 +14,6 @@ interface Memory {
     /**
      * 储存的东西
      */
-    container?: object,
-    source: object,
     error_times:number,
 }
 

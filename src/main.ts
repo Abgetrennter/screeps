@@ -12,6 +12,7 @@ import {upgrader} from '@/role/upgrader';
 import {claimer} from "@/role/claimer";
 import {tester} from "@/role/tester";
 import {remotebuilder} from "@/role/remotebuilder";
+import {linker} from "@/role/linker";
 
 //source();
 
@@ -25,9 +26,6 @@ function count_screeps() {
   }
 }
 */
-for (let room in Game.rooms) {
-    Game.rooms[room].source_count;
-}
 
 
 function tower(room: Room) {
@@ -89,7 +87,11 @@ export const loop = ErrorMapper.wrapLoop(() => {
                 carrier(creep);
                 break;
             }
-            case 'tester': {
+            case 'linker':{
+                linker(creep);
+                break;
+            }
+            /*case 'tester': {
                 tester(creep);
                 break;
             }
@@ -101,7 +103,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
             case 'remotebuilder': {
                 remotebuilder(creep);
-            }
+            }*/
         }
     }
     process();
